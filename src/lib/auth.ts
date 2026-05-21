@@ -41,6 +41,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
+    authorized({ auth, request }) {
+      const isLoggedIn = !!auth?.user;
+      const isOnDashboard = request.nextUrl.pathname.startsWith("/dashboard") ||
+        request.nextUrl.pathname.startsWith("/paket") ||
+        request.nextUrl.pathname.startsWith("/pelanggan") ||
+        request.nextUrl.pathname.startsWith("/tagihan") ||
+        request.nextUrl.pathname.startsWith("/pembayaran") ||
+        request.nextUrl.pathname.startsWith("/laporan") ||
+        request.nextUrl.pathname.startsWith("/settings");
+
+      if (isOnDashboard && !isLoggedIn) return false;
+      return true;
+    },
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
