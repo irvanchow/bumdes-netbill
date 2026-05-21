@@ -34,4 +34,5 @@ export const settingsSchema = z.object({
   appName: z.string().min(1, "Nama aplikasi wajib diisi"),
   bumdesAddress: z.string().min(1, "Alamat wajib diisi"),
   invoiceFooterText: z.string().optional(),
+  logoUrl: z.string().nullable().optional(),
 });

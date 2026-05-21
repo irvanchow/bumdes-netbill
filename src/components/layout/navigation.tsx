@@ -18,12 +18,12 @@ import {
   Sun,
   Moon,
   PanelLeftClose,
-  PanelLeftOpen,
   UserCog,
 } from "lucide-react";
 import { useState, createContext, useContext } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
+import { useAppSettings } from "@/hooks/use-app-settings";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -78,6 +78,7 @@ export function Sidebar() {
   const { data: session } = useSession();
   const { collapsed, setCollapsed } = useSidebar();
   const isAdmin = session?.user?.role === "admin";
+  const { logoUrl } = useAppSettings();
 
   const filteredNav = navItems.filter(
     (item) => !item.adminOnly || isAdmin
@@ -93,8 +94,12 @@ export function Sidebar() {
       <div className="flex flex-col flex-1 min-h-0">
         <div className={cn("flex items-center h-16 border-b border-border", collapsed ? "justify-center px-2" : "justify-between px-6")}>
           <div className={cn("flex items-center", collapsed ? "" : "gap-3")}>
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary shrink-0">
-              <Globe className="h-4 w-4 text-primary-foreground" />
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary shrink-0 overflow-hidden">
+              {logoUrl ? (
+                <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
+              ) : (
+                <Globe className="h-4 w-4 text-primary-foreground" />
+              )}
             </div>
             {!collapsed && (
               <div className="leading-tight">
@@ -170,6 +175,7 @@ export function MobileNav() {
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "admin";
   const [open, setOpen] = useState(false);
+  const { logoUrl } = useAppSettings();
 
   const filteredNav = navItems.filter(
     (item) => !item.adminOnly || isAdmin
@@ -179,8 +185,12 @@ export function MobileNav() {
     <>
       <header className="md:hidden fixed top-0 left-0 right-0 h-14 bg-card border-b border-border flex items-center justify-between px-4 z-50">
         <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary">
-            <Globe className="h-3.5 w-3.5 text-primary-foreground" />
+          <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary overflow-hidden">
+            {logoUrl ? (
+              <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
+            ) : (
+              <Globe className="h-3.5 w-3.5 text-primary-foreground" />
+            )}
           </div>
           <div className="leading-tight">
             <h1 className="text-sm font-semibold text-foreground">Bill BumdesNET</h1>

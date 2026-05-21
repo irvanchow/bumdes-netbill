@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Globe, Upload, Trash2 } from "lucide-react";
 
 interface Settings {
   id: string;
@@ -24,6 +25,8 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (session?.user?.role !== "admin") {
@@ -35,6 +38,55 @@ export default function SettingsPage() {
       .then((res) => setSettings(res.data))
       .finally(() => setLoading(false));
   }, [session, router]);
+
+  async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload/logo", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        setSettings((prev) => prev ? { ...prev, logoUrl: json.url } : prev);
+        toast.success("Logo berhasil diupload");
+      } else {
+        const json = await res.json();
+        toast.error(json.error || "Gagal upload logo");
+      }
+    } catch {
+      toast.error("Gagal upload logo");
+    }
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  async function handleDeleteLogo() {
+    const res = await fetch("/api/settings", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        appName: settings?.appName || "Bill BumdesNET",
+        bumdesAddress: settings?.bumdesAddress || "",
+        invoiceFooterText: settings?.invoiceFooterText || "",
+        logoUrl: null,
+      }),
+    });
+
+    if (res.ok) {
+      setSettings((prev) => prev ? { ...prev, logoUrl: null } : prev);
+      toast.success("Logo berhasil dihapus");
+    } else {
+      toast.error("Gagal menghapus logo");
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -120,6 +172,61 @@ export default function SettingsPage() {
                 Teks ini akan ditampilkan di bagian bawah setiap invoice PDF.
               </p>
             </div>
+
+            {/* Logo Upload */}
+            <div className="space-y-2">
+              <Label className="text-sm text-foreground">Logo Aplikasi</Label>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center justify-center w-16 h-16 rounded-lg border border-border bg-muted/50 overflow-hidden">
+                  {settings?.logoUrl ? (
+                    <img
+                      src={settings.logoUrl + "?t=" + Date.now()}
+                      alt="Logo"
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <Globe className="h-8 w-8 text-muted-foreground" />
+                  )}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                    >
+                      <Upload className="h-4 w-4 mr-1" />
+                      {uploading ? "Mengupload..." : "Pilih File"}
+                    </Button>
+                    {settings?.logoUrl && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleDeleteLogo}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        Hapus
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Format: JPG, PNG, WebP. Maksimal 2MB.
+                  </p>
+                </div>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleLogoUpload}
+                className="hidden"
+              />
+            </div>
+
             <Button type="submit" disabled={saving} className="bg-primary hover:bg-primary/90 text-primary-foreground">
               {saving ? "Menyimpan..." : "Simpan Pengaturan"}
             </Button>

@@ -4,11 +4,13 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Globe } from "lucide-react";
+import { useAppSettings } from "@/hooks/use-app-settings";
 
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { appName, logoUrl } = useAppSettings();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -43,10 +45,14 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm bg-card rounded-2xl shadow-lg p-8">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 mb-4">
-            <Globe className="h-7 w-7 text-primary" />
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 mb-4 overflow-hidden">
+            {logoUrl ? (
+              <img src={logoUrl} alt={appName} className="w-full h-full object-contain" />
+            ) : (
+              <Globe className="h-7 w-7 text-primary" />
+            )}
           </div>
-          <h1 className="text-xl font-semibold text-foreground">Bill BumdesNET</h1>
+          <h1 className="text-xl font-semibold text-foreground">{appName}</h1>
           <p className="text-muted-foreground mt-1 text-sm">Sistem Billing Internet Desa</p>
         </div>
 

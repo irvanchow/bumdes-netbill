@@ -40,6 +40,7 @@ export async function PUT(request: NextRequest) {
         appName: parsed.data.appName,
         bumdesAddress: parsed.data.bumdesAddress,
         invoiceFooterText: parsed.data.invoiceFooterText || null,
+        logoUrl: parsed.data.logoUrl !== undefined ? parsed.data.logoUrl : existing.logoUrl,
         updatedAt: new Date(),
       })
       .where(eq(appSettings.id, existing.id))
@@ -51,6 +52,7 @@ export async function PUT(request: NextRequest) {
         appName: parsed.data.appName,
         bumdesAddress: parsed.data.bumdesAddress,
         invoiceFooterText: parsed.data.invoiceFooterText || null,
+        logoUrl: parsed.data.logoUrl || null,
       })
       .returning();
   }
