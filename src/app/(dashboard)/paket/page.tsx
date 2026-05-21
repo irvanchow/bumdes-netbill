@@ -12,6 +12,7 @@ import { useSession } from "next-auth/react";
 interface Package {
   id: string;
   name: string;
+  category: string;
   speed: string;
   monthlyPrice: number;
   description: string | null;
@@ -74,6 +75,9 @@ export default function PaketPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">
+                  {pkg.category === "wireless_broadband" ? "Wireless Broadband" : "Fiber Optik"}
+                </p>
                 <p className="text-2xl font-semibold text-foreground">
                   {formatRupiah(pkg.monthlyPrice)}
                   <span className="text-sm font-normal text-muted-foreground">/bulan</span>

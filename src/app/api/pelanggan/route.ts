@@ -47,7 +47,8 @@ export async function GET(request: NextRequest) {
         phone: customers.phone,
         email: customers.email,
         status: customers.status,
-        subscriptionStartDate: customers.subscriptionStartDate,
+        registrationDate: customers.registrationDate,
+        activationDate: customers.activationDate,
         packageName: internetPackages.name,
         packageSpeed: internetPackages.speed,
         monthlyPrice: internetPackages.monthlyPrice,
@@ -98,7 +99,10 @@ export async function POST(request: NextRequest) {
       phone: parsed.data.phone,
       email: parsed.data.email || null,
       packageId: parsed.data.packageId,
-      subscriptionStartDate: parsed.data.subscriptionStartDate,
+      registrationDate: parsed.data.registrationDate,
+      activationDate: parsed.data.activationDate || null,
+      latitude: parsed.data.latitude ? String(parsed.data.latitude) : null,
+      longitude: parsed.data.longitude ? String(parsed.data.longitude) : null,
       assignedCollectorId: parsed.data.assignedCollectorId || null,
     })
     .returning();

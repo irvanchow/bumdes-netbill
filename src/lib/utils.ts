@@ -22,6 +22,18 @@ export function formatDate(date: string | Date): string {
   }).format(new Date(date));
 }
 
+export function formatDateTime(date: string | Date, time?: string | null): string {
+  const formatted = new Intl.DateTimeFormat("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(date));
+  if (time) {
+    return `${formatted} ${time}`;
+  }
+  return formatted;
+}
+
 export function formatShortDate(date: string | Date): string {
   return new Intl.DateTimeFormat("id-ID", {
     day: "2-digit",

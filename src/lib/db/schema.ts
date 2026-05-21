@@ -9,12 +9,14 @@ import {
   date,
   pgEnum,
   uniqueIndex,
+  numeric,
 } from "drizzle-orm/pg-core";
 
 export const roleEnum = pgEnum("role", ["admin", "collector"]);
 export const customerStatusEnum = pgEnum("customer_status", ["aktif", "nonaktif"]);
 export const billStatusEnum = pgEnum("bill_status", ["belum_bayar", "lunas"]);
 export const paymentMethodEnum = pgEnum("payment_method", ["tunai", "transfer"]);
+export const packageCategoryEnum = pgEnum("package_category", ["wireless_broadband", "fiber_optik"]);
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -30,6 +32,7 @@ export const users = pgTable("users", {
 export const internetPackages = pgTable("internet_packages", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: varchar("name", { length: 100 }).notNull(),
+  category: packageCategoryEnum("category").notNull(),
   speed: varchar("speed", { length: 50 }).notNull(),
   monthlyPrice: integer("monthly_price").notNull(),
   description: text("description"),
@@ -47,7 +50,10 @@ export const customers = pgTable("customers", {
   packageId: uuid("package_id")
     .references(() => internetPackages.id)
     .notNull(),
-  subscriptionStartDate: date("subscription_start_date").notNull(),
+  registrationDate: date("registration_date").notNull(),
+  activationDate: date("activation_date"),
+  latitude: numeric("latitude", { precision: 10, scale: 7 }),
+  longitude: numeric("longitude", { precision: 10, scale: 7 }),
   status: customerStatusEnum("status").default("aktif").notNull(),
   assignedCollectorId: uuid("assigned_collector_id").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),

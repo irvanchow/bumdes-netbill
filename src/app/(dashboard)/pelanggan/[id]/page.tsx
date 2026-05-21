@@ -12,8 +12,11 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { ArrowLeft, Pencil } from "lucide-react";
 import Link from "next/link";
-import { formatRupiah, formatDate } from "@/lib/utils";
+import { formatRupiah, formatDate, formatDateTime } from "@/lib/utils";
 import { useSession } from "next-auth/react";
+import { LocationPicker } from "@/components/location-picker";
+import { LocationMap } from "@/components/location-map";
+import { ShareLocationButton } from "@/components/share-location-button";
 
 interface Customer {
   id: string;
@@ -22,7 +25,10 @@ interface Customer {
   phone: string;
   email: string | null;
   status: string;
-  subscriptionStartDate: string;
+  registrationDate: string;
+  activationDate: string | null;
+  latitude: string | null;
+  longitude: string | null;
   packageId: string;
   assignedCollectorId: string | null;
   packageName: string;
@@ -30,6 +36,19 @@ interface Customer {
   monthlyPrice: number;
   collectorName: string | null;
   createdAt: string;
+  paymentHistory: PaymentRecord[];
+}
+
+interface PaymentRecord {
+  id: string;
+  transactionCode: string;
+  amountPaid: number;
+  paymentDate: string;
+  paymentTime: string | null;
+  paymentMethod: string;
+  invoiceNumber: string;
+  billPeriod: string;
+  collectorName: string;
 }
 
 interface Package {
@@ -53,12 +72,18 @@ export default function DetailPelangganPage({ params }: { params: Promise<{ id: 
   const [loading, setLoading] = useState(false);
   const [packages, setPackages] = useState<Package[]>([]);
   const [collectors, setCollectors] = useState<Collector[]>([]);
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
   const isAdmin = session?.user?.role === "admin";
 
   useEffect(() => {
     fetch(`/api/pelanggan/${id}`)
       .then((res) => res.json())
-      .then((res) => setCustomer(res.data));
+      .then((res) => {
+        setCustomer(res.data);
+        if (res.data?.latitude) setLatitude(parseFloat(res.data.latitude));
+        if (res.data?.longitude) setLongitude(parseFloat(res.data.longitude));
+      });
   }, [id]);
 
   useEffect(() => {
@@ -84,7 +109,10 @@ export default function DetailPelangganPage({ params }: { params: Promise<{ id: 
       phone: formData.get("phone") as string,
       email: formData.get("email") as string,
       packageId: formData.get("packageId") as string,
-      subscriptionStartDate: formData.get("subscriptionStartDate") as string,
+      registrationDate: formData.get("registrationDate") as string,
+      activationDate: formData.get("activationDate") as string,
+      latitude,
+      longitude,
       assignedCollectorId: formData.get("assignedCollectorId") as string,
     };
 
@@ -130,41 +158,63 @@ export default function DetailPelangganPage({ params }: { params: Promise<{ id: 
           </CardHeader>
           <CardContent className="space-y-3">
             <div>
-              <p className="text-sm text-gray-500">Alamat</p>
-              <p>{customer.address}</p>
+              <p className="text-sm text-muted-foreground">Alamat</p>
+              <p className="text-foreground">{customer.address}</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-500">Telepon</p>
-                <p>{customer.phone}</p>
+                <p className="text-sm text-muted-foreground">Telepon</p>
+                <p className="text-foreground">{customer.phone}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Email</p>
-                <p>{customer.email || "-"}</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-gray-500">Paket</p>
-                <p>{customer.packageName} ({customer.packageSpeed})</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Harga/Bulan</p>
-                <p className="font-semibold">{formatRupiah(customer.monthlyPrice)}</p>
+                <p className="text-sm text-muted-foreground">Email</p>
+                <p className="text-foreground">{customer.email || "-"}</p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-500">Mulai Berlangganan</p>
-                <p>{formatDate(customer.subscriptionStartDate)}</p>
+                <p className="text-sm text-muted-foreground">Paket</p>
+                <p className="text-foreground">{customer.packageName} ({customer.packageSpeed})</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Collector</p>
-                <p>{customer.collectorName || "-"}</p>
+                <p className="text-sm text-muted-foreground">Harga/Bulan</p>
+                <p className="font-semibold text-foreground">{formatRupiah(customer.monthlyPrice)}</p>
               </div>
             </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Tanggal Registrasi</p>
+                <p className="text-foreground">{formatDate(customer.registrationDate)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Tanggal Aktivasi</p>
+                <p className="text-foreground">{customer.activationDate ? formatDate(customer.activationDate) : "-"}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Collector</p>
+                <p className="text-foreground">{customer.collectorName || "-"}</p>
+              </div>
+            </div>
+            {customer.latitude && customer.longitude && (
+              <div className="space-y-2 pt-2">
+                <p className="text-sm text-muted-foreground">Lokasi Pemasangan</p>
+                <LocationMap
+                  latitude={parseFloat(customer.latitude)}
+                  longitude={parseFloat(customer.longitude)}
+                />
+                <ShareLocationButton
+                  customerName={customer.name}
+                  address={customer.address}
+                  latitude={parseFloat(customer.latitude)}
+                  longitude={parseFloat(customer.longitude)}
+                  size="sm"
+                />
+              </div>
+            )}
             {isAdmin && (
-              <Button onClick={() => setEditing(true)} variant="outline" className="mt-4">
+              <Button onClick={() => setEditing(true)} variant="outline" className="mt-4 border-border">
                 <Pencil className="h-4 w-4 mr-2" />
                 Edit
               </Button>
@@ -210,13 +260,22 @@ export default function DetailPelangganPage({ params }: { params: Promise<{ id: 
                 </select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="subscriptionStartDate">Tanggal Mulai</Label>
+                <Label htmlFor="registrationDate">Tanggal Registrasi</Label>
                 <Input
-                  id="subscriptionStartDate"
-                  name="subscriptionStartDate"
+                  id="registrationDate"
+                  name="registrationDate"
                   type="date"
-                  defaultValue={customer.subscriptionStartDate}
+                  defaultValue={customer.registrationDate}
                   required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="activationDate">Tanggal Aktivasi</Label>
+                <Input
+                  id="activationDate"
+                  name="activationDate"
+                  type="date"
+                  defaultValue={customer.activationDate || ""}
                 />
               </div>
               <div className="space-y-2">
@@ -233,6 +292,14 @@ export default function DetailPelangganPage({ params }: { params: Promise<{ id: 
                   ))}
                 </select>
               </div>
+              <div className="space-y-2">
+                <Label>Lokasi Pemasangan</Label>
+                <LocationPicker
+                  latitude={latitude}
+                  longitude={longitude}
+                  onChange={(lat, lng) => { setLatitude(lat); setLongitude(lng); }}
+                />
+              </div>
               <div className="flex gap-3">
                 <Button type="submit" disabled={loading}>
                   {loading ? "Menyimpan..." : "Simpan"}
@@ -242,6 +309,76 @@ export default function DetailPelangganPage({ params }: { params: Promise<{ id: 
                 </Button>
               </div>
             </form>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Riwayat Pembayaran */}
+      {!editing && customer.paymentHistory && customer.paymentHistory.length > 0 && (
+        <Card className="border-border">
+          <CardHeader>
+            <CardTitle className="text-lg text-foreground">Riwayat Pembayaran</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="border-b border-border">
+                  <tr>
+                    <th className="text-left p-3 font-medium text-xs uppercase tracking-wider text-muted-foreground">Kode Transaksi</th>
+                    <th className="text-left p-3 font-medium text-xs uppercase tracking-wider text-muted-foreground">Tanggal</th>
+                    <th className="text-left p-3 font-medium text-xs uppercase tracking-wider text-muted-foreground">Periode</th>
+                    <th className="text-left p-3 font-medium text-xs uppercase tracking-wider text-muted-foreground">No. Invoice</th>
+                    <th className="text-left p-3 font-medium text-xs uppercase tracking-wider text-muted-foreground">Jumlah</th>
+                    <th className="text-left p-3 font-medium text-xs uppercase tracking-wider text-muted-foreground">Metode</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {customer.paymentHistory.map((p) => (
+                    <tr key={p.id} className="border-b border-border/50 hover:bg-accent/50 transition-colors">
+                      <td className="p-3 font-mono text-xs text-primary">{p.transactionCode}</td>
+                      <td className="p-3 text-muted-foreground">
+                        {formatDateTime(p.paymentDate, p.paymentTime)}
+                      </td>
+                      <td className="p-3 text-muted-foreground">{formatDate(p.billPeriod)}</td>
+                      <td className="p-3 font-mono text-xs text-muted-foreground">{p.invoiceNumber}</td>
+                      <td className="p-3 font-medium text-foreground">{formatRupiah(p.amountPaid)}</td>
+                      <td className="p-3">
+                        <Badge variant="secondary" className="bg-muted text-muted-foreground border-0">
+                          {p.paymentMethod}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile list */}
+            <div className="md:hidden space-y-3">
+              {customer.paymentHistory.map((p) => (
+                <div key={p.id} className="p-3 bg-accent/30 rounded-lg">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="font-mono text-xs text-primary">{p.transactionCode}</p>
+                      <p className="text-sm font-medium text-foreground mt-1">{p.invoiceNumber}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatDateTime(p.paymentDate, p.paymentTime)}
+                      </p>
+                    </div>
+                    <p className="font-medium text-foreground">{formatRupiah(p.amountPaid)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {!editing && customer.paymentHistory && customer.paymentHistory.length === 0 && (
+        <Card className="border-border">
+          <CardContent className="py-8 text-center text-muted-foreground">
+            <p className="text-sm">Belum ada riwayat pembayaran.</p>
           </CardContent>
         </Card>
       )}

@@ -21,6 +21,11 @@ let characteristic: BluetoothRemoteGATTCharacteristic | null = null;
 
 export async function connectPrinter(): Promise<boolean> {
   try {
+    // Check if bluetooth is available
+    if (!navigator.bluetooth) {
+      throw new Error("Browser tidak mendukung Bluetooth");
+    }
+
     // Request device with printer service
     device = await navigator.bluetooth.requestDevice({
       filters: ALT_SERVICE_UUIDS.map((uuid) => ({ services: [uuid] })),

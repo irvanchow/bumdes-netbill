@@ -15,6 +15,7 @@ import Link from "next/link";
 interface Package {
   id: string;
   name: string;
+  category: string;
   speed: string;
   monthlyPrice: number;
   description: string | null;
@@ -40,6 +41,7 @@ export default function EditPaketPage({ params }: { params: Promise<{ id: string
     const formData = new FormData(e.currentTarget);
     const data = {
       name: formData.get("name") as string,
+      category: formData.get("category") as string,
       speed: formData.get("speed") as string,
       monthlyPrice: parseInt(formData.get("monthlyPrice") as string),
       description: formData.get("description") as string,
@@ -81,6 +83,19 @@ export default function EditPaketPage({ params }: { params: Promise<{ id: string
             <div className="space-y-2">
               <Label htmlFor="name">Nama Paket</Label>
               <Input id="name" name="name" defaultValue={pkg.name} required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="category">Kategori</Label>
+              <select
+                id="category"
+                name="category"
+                defaultValue={pkg.category}
+                required
+                className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground"
+              >
+                <option value="wireless_broadband">Wireless Broadband</option>
+                <option value="fiber_optik">Fiber Optik</option>
+              </select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="speed">Kecepatan</Label>

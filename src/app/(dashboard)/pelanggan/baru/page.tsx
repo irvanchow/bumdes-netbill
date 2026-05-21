@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { LocationPicker } from "@/components/location-picker";
 
 interface Package {
   id: string;
@@ -28,6 +29,8 @@ export default function TambahPelangganPage() {
   const [loading, setLoading] = useState(false);
   const [packages, setPackages] = useState<Package[]>([]);
   const [collectors, setCollectors] = useState<Collector[]>([]);
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
 
   useEffect(() => {
     fetch("/api/paket")
@@ -50,7 +53,10 @@ export default function TambahPelangganPage() {
       phone: formData.get("phone") as string,
       email: formData.get("email") as string,
       packageId: formData.get("packageId") as string,
-      subscriptionStartDate: formData.get("subscriptionStartDate") as string,
+      registrationDate: formData.get("registrationDate") as string,
+      activationDate: formData.get("activationDate") as string,
+      latitude,
+      longitude,
       assignedCollectorId: formData.get("assignedCollectorId") as string,
     };
 
@@ -117,9 +123,15 @@ export default function TambahPelangganPage() {
                 ))}
               </select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="subscriptionStartDate">Tanggal Mulai Berlangganan</Label>
-              <Input id="subscriptionStartDate" name="subscriptionStartDate" type="date" required />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="registrationDate">Tanggal Registrasi</Label>
+                <Input id="registrationDate" name="registrationDate" type="date" defaultValue={new Date().toISOString().split("T")[0]} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="activationDate">Tanggal Aktivasi</Label>
+                <Input id="activationDate" name="activationDate" type="date" defaultValue={new Date().toISOString().split("T")[0]} />
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="assignedCollectorId">Collector (opsional)</Label>
@@ -133,6 +145,14 @@ export default function TambahPelangganPage() {
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
+            </div>
+            <div className="space-y-2">
+              <Label>Lokasi Pemasangan</Label>
+              <LocationPicker
+                latitude={latitude}
+                longitude={longitude}
+                onChange={(lat, lng) => { setLatitude(lat); setLongitude(lng); }}
+              />
             </div>
             <div className="flex gap-3">
               <Button type="submit" disabled={loading}>

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { customers, internetPackages, users } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { customers, internetPackages, users, bills, payments } from "@/lib/db/schema";
+import { eq, desc } from "drizzle-orm";
 import { pelangganSchema } from "@/lib/validators";
 
 export async function GET(
@@ -21,7 +21,10 @@ export async function GET(
       phone: customers.phone,
       email: customers.email,
       status: customers.status,
-      subscriptionStartDate: customers.subscriptionStartDate,
+      registrationDate: customers.registrationDate,
+      activationDate: customers.activationDate,
+      latitude: customers.latitude,
+      longitude: customers.longitude,
       packageId: customers.packageId,
       assignedCollectorId: customers.assignedCollectorId,
       packageName: internetPackages.name,
@@ -42,7 +45,26 @@ export async function GET(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  return NextResponse.json({ data: customer });
+  // Get payment history for this customer
+  const paymentHistory = await db
+    .select({
+      id: payments.id,
+      transactionCode: payments.transactionCode,
+      amountPaid: payments.amountPaid,
+      paymentDate: payments.paymentDate,
+      paymentTime: payments.paymentTime,
+      paymentMethod: payments.paymentMethod,
+      invoiceNumber: bills.invoiceNumber,
+      billPeriod: bills.billPeriod,
+      collectorName: users.name,
+    })
+    .from(payments)
+    .innerJoin(bills, eq(payments.billId, bills.id))
+    .leftJoin(users, eq(payments.collectorId, users.id))
+    .where(eq(bills.customerId, id))
+    .orderBy(desc(payments.paymentDate));
+
+  return NextResponse.json({ data: { ...customer, paymentHistory } });
 }
 
 export async function PUT(
@@ -68,7 +90,10 @@ export async function PUT(
       phone: parsed.data.phone,
       email: parsed.data.email || null,
       packageId: parsed.data.packageId,
-      subscriptionStartDate: parsed.data.subscriptionStartDate,
+      registrationDate: parsed.data.registrationDate,
+      activationDate: parsed.data.activationDate || null,
+      latitude: parsed.data.latitude ? String(parsed.data.latitude) : null,
+      longitude: parsed.data.longitude ? String(parsed.data.longitude) : null,
       assignedCollectorId: parsed.data.assignedCollectorId || null,
       updatedAt: new Date(),
     })

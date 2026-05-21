@@ -3,9 +3,6 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Globe } from "lucide-react";
 
 export default function LoginPage() {
@@ -22,17 +19,23 @@ export default function LoginPage() {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
 
-    if (result?.error) {
-      setError("Email atau password salah");
+      if (result?.error) {
+        setError("Email atau password salah");
+        setLoading(false);
+      } else {
+        router.push("/dashboard");
+        router.refresh();
+      }
+    } catch {
+      setError("Terjadi kesalahan saat login");
       setLoading(false);
-    } else {
-      router.push("/dashboard");
     }
   }
 
@@ -40,7 +43,6 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm bg-card rounded-2xl shadow-lg p-8">
         <div className="text-center mb-8">
-          {/* TODO: Ganti dengan logo BumDes */}
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 mb-4">
             <Globe className="h-7 w-7 text-primary" />
           </div>
@@ -55,33 +57,33 @@ export default function LoginPage() {
             </div>
           )}
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm text-foreground">Email</Label>
-            <Input
+            <label htmlFor="email" className="text-sm font-medium text-foreground">Email</label>
+            <input
               id="email"
               name="email"
               type="email"
               placeholder="admin@bumdes.id"
-              className="h-10 bg-muted/50 border-0 shadow-none"
+              className="w-full h-10 px-3 rounded-lg bg-muted/50 border border-input text-sm"
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm text-foreground">Password</Label>
-            <Input
+            <label htmlFor="password" className="text-sm font-medium text-foreground">Password</label>
+            <input
               id="password"
               name="password"
               type="password"
-              className="h-10 bg-muted/50 border-0 shadow-none"
+              className="w-full h-10 px-3 rounded-lg bg-muted/50 border border-input text-sm"
               required
             />
           </div>
-          <Button
+          <button
             type="submit"
-            className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground"
+            className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium disabled:opacity-50"
             disabled={loading}
           >
             {loading ? "Memproses..." : "Masuk"}
-          </Button>
+          </button>
         </form>
 
         <p className="text-center text-muted-foreground text-xs mt-6">

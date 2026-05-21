@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
     .insert(internetPackages)
     .values({
       name: parsed.data.name,
+      category: parsed.data.category,
       speed: parsed.data.speed,
       monthlyPrice: parsed.data.monthlyPrice,
       description: parsed.data.description || null,

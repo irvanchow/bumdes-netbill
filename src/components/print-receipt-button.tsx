@@ -26,7 +26,7 @@ export function PrintReceiptButton({
 
   async function handlePrint() {
     // Check if Web Bluetooth is supported
-    if (!navigator.bluetooth) {
+    if (!('bluetooth' in navigator)) {
       toast.error("Browser tidak mendukung Bluetooth. Gunakan Chrome/Edge di Android.");
       return;
     }
