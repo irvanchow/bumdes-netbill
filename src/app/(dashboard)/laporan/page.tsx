@@ -75,10 +75,6 @@ export default function LaporanPage() {
     fetchReport(1);
   }, [fetchReport]);
 
-  function handleFilter() {
-    fetchReport(1);
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -126,7 +122,16 @@ export default function LaporanPage() {
               </div>
             )}
             <div className="flex items-end">
-              <Button onClick={handleFilter} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">Filter</Button>
+              <a
+                href={`/api/laporan/cetak?startDate=${startDate}&endDate=${endDate}${collectorId ? `&collectorId=${collectorId}` : ""}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                  <Download className="h-4 w-4 mr-2" />
+                  Cetak Laporan
+                </Button>
+              </a>
             </div>
           </div>
         </CardContent>
