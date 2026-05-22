@@ -79,6 +79,19 @@ export async function POST(request: NextRequest) {
   if (!bill) return NextResponse.json({ error: "Tagihan tidak ditemukan" }, { status: 404 });
   if (bill.status === "lunas") return NextResponse.json({ error: "Tagihan sudah lunas" }, { status: 400 });
 
+  // For installation bills, check if activationDate is set
+  if (bill.billType === "instalasi") {
+    const [customer] = await db
+      .select({ activationDate: customers.activationDate })
+      .from(customers)
+      .where(eq(customers.id, bill.customerId))
+      .limit(1);
+
+    if (!customer?.activationDate) {
+      return NextResponse.json({ error: "Tanggal aktivasi belum diset. Edit data pelanggan terlebih dahulu." }, { status: 400 });
+    }
+  }
+
   // Jumlah bayar harus sama dengan tagihan
   if (parsed.data.amountPaid !== bill.amount) {
     return NextResponse.json({ error: "Jumlah bayar harus sama dengan jumlah tagihan" }, { status: 400 });

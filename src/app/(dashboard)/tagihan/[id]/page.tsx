@@ -36,11 +36,13 @@ interface BillDetail {
   customerAddress: string;
   customerPhone: string;
   customerEmail: string | null;
+  activationDate: string | null;
   packageName: string;
   packageSpeed: string;
   billPeriod: string;
   amount: number;
   status: string;
+  billType: string;
   dueDate: string;
   invoiceNumber: string;
   payments: Payment[];
@@ -131,12 +133,19 @@ export default function TagihanDetailPage({ params }: { params: Promise<{ id: st
                 </Button>
               </a>
               {bill.status === "belum_bayar" && (
-                <Link href={`/pembayaran/baru?billId=${bill.id}`}>
-                  <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                bill.billType === "instalasi" && !bill.activationDate ? (
+                  <Button size="sm" disabled className="opacity-50">
                     <CreditCard className="h-4 w-4 mr-2" />
-                    Bayar
+                    Set tanggal aktivasi dulu
                   </Button>
-                </Link>
+                ) : (
+                  <Link href={`/pembayaran/baru?billId=${bill.id}`}>
+                    <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                      <CreditCard className="h-4 w-4 mr-2" />
+                      Bayar
+                    </Button>
+                  </Link>
+                )
               )}
               {bill.status === "lunas" && bill.payments.length > 0 && (
                 <PrintReceiptButton

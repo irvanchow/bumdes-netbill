@@ -128,10 +128,6 @@ export default function TambahPelangganPage() {
                 <Label htmlFor="registrationDate">Tanggal Registrasi</Label>
                 <Input id="registrationDate" name="registrationDate" type="date" defaultValue={new Date().toISOString().split("T")[0]} required />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="activationDate">Tanggal Aktivasi</Label>
-                <Input id="activationDate" name="activationDate" type="date" defaultValue={new Date().toISOString().split("T")[0]} />
-              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="assignedCollectorId">Collector (opsional)</Label>
