@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, FileText, CheckCircle, AlertCircle, BarChart3 } from "lucide-react";
+import { Users, FileText, CheckCircle, AlertCircle, BarChart3, MapPin } from "lucide-react";
 import { formatRupiah } from "@/lib/utils";
+
+const CustomersMap = dynamic(() => import("@/components/customers-map"), { ssr: false });
 import {
   BarChart,
   Bar,
@@ -218,6 +221,19 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Peta Sebaran Pelanggan */}
+      <Card className="border-border shadow-none">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base font-medium text-foreground flex items-center gap-2">
+            <MapPin className="h-4 w-4" />
+            Peta Sebaran Pelanggan
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <CustomersMap />
+        </CardContent>
+      </Card>
     </div>
   );
 }
