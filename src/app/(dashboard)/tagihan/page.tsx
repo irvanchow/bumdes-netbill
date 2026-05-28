@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, ChevronLeft, ChevronRight, FileText, RefreshCw, MessageCircle } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, FileText, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import { useSession } from "next-auth/react";
@@ -171,8 +171,8 @@ export default function TagihanPage() {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50" title="Kirim via WhatsApp">
-                              <MessageCircle className="h-4 w-4" />
+                            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-green-50" title="Kirim via WhatsApp">
+                              <img src="/icons/logo-whatsapp-png-46067.png" alt="WhatsApp" className="h-5 w-5" />
                             </Button>
                           </a>
                         )}
@@ -216,8 +216,8 @@ export default function TagihanPage() {
                         rel="noopener noreferrer"
                         className="flex-1"
                       >
-                        <Button variant="outline" size="sm" className="w-full text-green-600 border-green-200 hover:bg-green-50">
-                          <MessageCircle className="h-3.5 w-3.5 mr-1" />
+                        <Button variant="outline" size="sm" className="w-full border-green-200 hover:bg-green-50">
+                          <img src="/icons/logo-whatsapp-png-46067.png" alt="WhatsApp" className="h-4 w-4 mr-1" />
                           WhatsApp
                         </Button>
                       </a>
