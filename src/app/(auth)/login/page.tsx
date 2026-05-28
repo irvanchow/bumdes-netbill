@@ -93,7 +93,7 @@ export default function LoginPage() {
         </form>
 
         <p className="text-center text-muted-foreground text-xs mt-6">
-          &copy; 2026 BumDes Jelijih Punggang. All rights reserved.
+          &copy; 2026 Bumdesa GIRI MANDALA. All rights reserved.
         </p>
       </div>
     </div>
