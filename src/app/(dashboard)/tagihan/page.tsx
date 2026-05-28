@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, ChevronLeft, ChevronRight, FileText, RefreshCw } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, FileText, RefreshCw, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import { useSession } from "next-auth/react";
@@ -159,12 +159,24 @@ export default function TagihanPage() {
                       </Badge>
                     </td>
                     <td className="p-4">
-                      <Link href={`/tagihan/${bill.id}`}>
-                        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                          <FileText className="h-3.5 w-3.5 mr-1" />
-                          Detail
-                        </Button>
-                      </Link>
+                      <div className="flex items-center gap-1">
+                        <Link href={`/tagihan/${bill.id}`}>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" title="Detail">
+                            <FileText className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        {bill.status === "belum_bayar" && bill.customerPhone && (
+                          <a
+                            href={`https://wa.me/${bill.customerPhone.replace(/^0/, "62")}?text=${encodeURIComponent(`Assalamualaikum, kami dari Bumdesa GIRI MANDALA ingin menginformasikan tagihan internet Anda:\n\nNama: ${bill.customerName}\nNo. Invoice: ${bill.invoiceNumber}\nPaket: ${bill.packageName}\nJatuh Tempo: ${formatDate(bill.dueDate)}\nJumlah: ${formatRupiah(bill.amount)}\n\nMohon segera melakukan pembayaran. Terima kasih.\n\nBumdesa GIRI MANDALA\nWA: 6289696372421`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50" title="Kirim via WhatsApp">
+                              <MessageCircle className="h-4 w-4" />
+                            </Button>
+                          </a>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -175,25 +187,44 @@ export default function TagihanPage() {
           {/* Mobile cards */}
           <div className="md:hidden space-y-3">
             {bills.map((bill) => (
-              <Link key={bill.id} href={`/tagihan/${bill.id}`}>
-                <Card className="hover:shadow-sm transition-shadow border-border">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="font-medium text-foreground">{bill.customerName}</p>
-                        <p className="text-xs text-muted-foreground font-mono">{bill.invoiceNumber}</p>
-                      </div>
-                      <Badge variant={bill.status === "lunas" ? "default" : "destructive"} className={bill.status === "lunas" ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-50 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800" : "bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-50 dark:bg-rose-950 dark:text-rose-400 dark:border-rose-800"}>
-                        {bill.status === "lunas" ? "Lunas" : "Belum Bayar"}
-                      </Badge>
+              <Card key={bill.id} className="hover:shadow-sm transition-shadow border-border">
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="font-medium text-foreground">{bill.customerName}</p>
+                      <p className="text-xs text-muted-foreground font-mono">{bill.invoiceNumber}</p>
                     </div>
-                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
-                      <span className="text-sm text-muted-foreground">Jatuh tempo: {formatDate(bill.dueDate)}</span>
-                      <span className="text-sm font-medium text-foreground">{formatRupiah(bill.amount)}</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                    <Badge variant={bill.status === "lunas" ? "default" : "destructive"} className={bill.status === "lunas" ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-50 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800" : "bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-50 dark:bg-rose-950 dark:text-rose-400 dark:border-rose-800"}>
+                      {bill.status === "lunas" ? "Lunas" : "Belum Bayar"}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
+                    <span className="text-sm text-muted-foreground">Jatuh tempo: {formatDate(bill.dueDate)}</span>
+                    <span className="text-sm font-medium text-foreground">{formatRupiah(bill.amount)}</span>
+                  </div>
+                  <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
+                    <Link href={`/tagihan/${bill.id}`} className="flex-1">
+                      <Button variant="outline" size="sm" className="w-full border-border">
+                        <FileText className="h-3.5 w-3.5 mr-1" />
+                        Detail
+                      </Button>
+                    </Link>
+                    {bill.status === "belum_bayar" && bill.customerPhone && (
+                      <a
+                        href={`https://wa.me/${bill.customerPhone.replace(/^0/, "62")}?text=${encodeURIComponent(`Assalamualaikum, kami dari Bumdesa GIRI MANDALA ingin menginformasikan tagihan internet Anda:\n\nNama: ${bill.customerName}\nNo. Invoice: ${bill.invoiceNumber}\nPaket: ${bill.packageName}\nJatuh Tempo: ${formatDate(bill.dueDate)}\nJumlah: ${formatRupiah(bill.amount)}\n\nMohon segera melakukan pembayaran. Terima kasih.\n\nBumdesa GIRI MANDALA\nWA: 6289696372421`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1"
+                      >
+                        <Button variant="outline" size="sm" className="w-full text-green-600 border-green-200 hover:bg-green-50">
+                          <MessageCircle className="h-3.5 w-3.5 mr-1" />
+                          WhatsApp
+                        </Button>
+                      </a>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
 
