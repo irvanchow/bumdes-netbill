@@ -167,7 +167,7 @@ export default function TagihanPage() {
                         </Link>
                         {bill.status === "belum_bayar" && bill.customerPhone && (
                           <a
-                            href={`https://wa.me/${bill.customerPhone.replace(/^0/, "62")}?text=${encodeURIComponent(`Assalamualaikum, kami dari Bumdesa GIRI MANDALA ingin menginformasikan tagihan internet Anda:\n\nNama: ${bill.customerName}\nNo. Invoice: ${bill.invoiceNumber}\nPaket: ${bill.packageName}\nJatuh Tempo: ${formatDate(bill.dueDate)}\nJumlah: ${formatRupiah(bill.amount)}\n\nMohon segera melakukan pembayaran. Terima kasih.\n\nBumdesa GIRI MANDALA\nWA: 6289696372421`)}`}
+                            href={`https://wa.me/${bill.customerPhone.replace(/^0/, "62")}?text=${encodeURIComponent(`Kami dari Bumdesa GIRI MANDALA ingin menginformasikan tagihan internet Bapak/Ibu :\n\nNama: ${bill.customerName}\nNo. Invoice: ${bill.invoiceNumber}\nPaket: ${bill.packageName}\nJatuh Tempo: ${formatDate(bill.dueDate)}\nJumlah: ${formatRupiah(bill.amount)}\n\nMohon untuk dapat melakukan pembayaran melalui collector kami. Terima kasih.\n\nBumdesa GIRI MANDALA`)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -211,7 +211,7 @@ export default function TagihanPage() {
                     </Link>
                     {bill.status === "belum_bayar" && bill.customerPhone && (
                       <a
-                        href={`https://wa.me/${bill.customerPhone.replace(/^0/, "62")}?text=${encodeURIComponent(`Assalamualaikum, kami dari Bumdesa GIRI MANDALA ingin menginformasikan tagihan internet Anda:\n\nNama: ${bill.customerName}\nNo. Invoice: ${bill.invoiceNumber}\nPaket: ${bill.packageName}\nJatuh Tempo: ${formatDate(bill.dueDate)}\nJumlah: ${formatRupiah(bill.amount)}\n\nMohon segera melakukan pembayaran. Terima kasih.\n\nBumdesa GIRI MANDALA\nWA: 6289696372421`)}`}
+                        href={`https://wa.me/${bill.customerPhone.replace(/^0/, "62")}?text=${encodeURIComponent(`Kami dari Bumdesa GIRI MANDALA ingin menginformasikan tagihan internet Bapak/Ibu :\n\nNama: ${bill.customerName}\nNo. Invoice: ${bill.invoiceNumber}\nPaket: ${bill.packageName}\nJatuh Tempo: ${formatDate(bill.dueDate)}\nJumlah: ${formatRupiah(bill.amount)}\n\nMohon untuk dapat melakukan pembayaran melalui collector kami. Terima kasih.\n\nBumdesa GIRI MANDALA`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex-1"
