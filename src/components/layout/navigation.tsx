@@ -21,7 +21,7 @@ import {
   UserCog,
   ChevronDown,
 } from "lucide-react";
-import { useState, createContext, useContext } from "react";
+import { useState, createContext, useContext, useEffect } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import { useAppSettings } from "@/hooks/use-app-settings";
@@ -93,6 +93,35 @@ export function Sidebar() {
     (item) => !item.adminOnly || isAdmin
   );
 
+  const [openMenus, setOpenMenus] = useState<Set<string>>(() => {
+    const initial = new Set<string>();
+    filteredNav.forEach((item) => {
+      if ("children" in item && item.children) {
+        if (pathname.startsWith(item.href + "/")) {
+          initial.add(item.href);
+        }
+      }
+    });
+    return initial;
+  });
+
+  useEffect(() => {
+    filteredNav.forEach((item) => {
+      if ("children" in item && item.children && pathname.startsWith(item.href + "/")) {
+        setOpenMenus((prev) => new Set(prev).add(item.href));
+      }
+    });
+  }, [pathname]);
+
+  const toggleMenu = (href: string) => {
+    setOpenMenus((prev) => {
+      const next = new Set(prev);
+      if (next.has(href)) next.delete(href);
+      else next.add(href);
+      return next;
+    });
+  };
+
   return (
     <aside
       className={cn(
@@ -144,10 +173,11 @@ export function Sidebar() {
             const hasChildren = "children" in item && item.children;
 
             if (hasChildren && !collapsed) {
+              const isOpen = openMenus.has(item.href);
               return (
                 <div key={item.href}>
                   <button
-                    onClick={() => {}}
+                    onClick={() => toggleMenu(item.href)}
                     className={cn(
                       "flex items-center w-full rounded-lg text-sm font-medium transition-colors duration-150",
                       "gap-3 px-3 py-2",
@@ -158,9 +188,9 @@ export function Sidebar() {
                   >
                     <item.icon className="h-4 w-4 shrink-0" />
                     <span className="flex-1 text-left">{item.label}</span>
-                    <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isActive && "rotate-180")} />
+                    <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isOpen && "rotate-180")} />
                   </button>
-                  {isActive && (
+                  {isOpen && (
                     <div className="ml-7 mt-1 space-y-1">
                       {item.children.map((child) => {
                         const isChildActive = pathname === child.href || pathname.startsWith(child.href + "/");
@@ -229,6 +259,24 @@ export function MobileNav() {
   const isAdmin = session?.user?.role === "admin";
   const [open, setOpen] = useState(false);
   const { logoUrl } = useAppSettings();
+  const [openMenus, setOpenMenus] = useState<Set<string>>(() => {
+    const initial = new Set<string>();
+    navItems.forEach((item) => {
+      if ("children" in item && item.children && pathname.startsWith(item.href + "/")) {
+        initial.add(item.href);
+      }
+    });
+    return initial;
+  });
+
+  const toggleMenu = (href: string) => {
+    setOpenMenus((prev) => {
+      const next = new Set(prev);
+      if (next.has(href)) next.delete(href);
+      else next.add(href);
+      return next;
+    });
+  };
 
   const filteredNav = navItems.filter(
     (item) => !item.adminOnly || isAdmin
@@ -266,21 +314,23 @@ export function MobileNav() {
               const hasChildren = "children" in item && item.children;
 
               if (hasChildren) {
+                const isOpen = openMenus.has(item.href);
                 return (
                   <div key={item.href}>
-                    <div
+                    <button
+                      onClick={() => toggleMenu(item.href)}
                       className={cn(
-                        "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors duration-150",
+                        "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors duration-150 w-full",
                         isActive
                           ? "bg-accent text-accent-foreground"
                           : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
                       )}
                     >
                       <item.icon className="h-4 w-4" />
-                      <span className="flex-1">{item.label}</span>
-                      <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isActive && "rotate-180")} />
-                    </div>
-                    {isActive && (
+                      <span className="flex-1 text-left">{item.label}</span>
+                      <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isOpen && "rotate-180")} />
+                    </button>
+                    {isOpen && (
                       <div className="ml-8 mt-1 space-y-1">
                         {item.children.map((child) => {
                           const isChildActive = pathname === child.href || pathname.startsWith(child.href + "/");
