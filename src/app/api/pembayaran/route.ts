@@ -99,8 +99,13 @@ export async function POST(request: NextRequest) {
 
   // Generate transaction code: TRX-YYYYMMDD-XXXX
   const today = new Date();
-  const dateStr = today.toISOString().slice(0, 10).replace(/-/g, "");
-  const timeStr = today.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+  const witaDate = new Date(today.toLocaleString("en-US", { timeZone: "Asia/Makassar" }));
+  const dateStr = witaDate.getFullYear().toString() +
+    String(witaDate.getMonth() + 1).padStart(2, "0") +
+    String(witaDate.getDate()).padStart(2, "0");
+  const timeStr = String(witaDate.getHours()).padStart(2, "0") + ":" +
+    String(witaDate.getMinutes()).padStart(2, "0") + ":" +
+    String(witaDate.getSeconds()).padStart(2, "0");
   const prefix = `TRX-${dateStr}-`;
 
   const [lastTrx] = await db
