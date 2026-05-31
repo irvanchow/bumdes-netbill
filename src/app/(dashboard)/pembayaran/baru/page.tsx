@@ -16,9 +16,12 @@ import { PrintReceiptButton } from "@/components/print-receipt-button";
 interface Bill {
   id: string;
   customerName: string;
+  customerAddress: string;
+  packageName: string;
   invoiceNumber: string;
   amount: number;
   billPeriod: string;
+  billType: string;
   dueDate: string;
   status: string;
 }
@@ -173,8 +176,8 @@ function CatatPembayaranForm() {
                     paymentDate: formatDate(paidDate),
                     paymentTime: paidTime,
                     customerName: selectedBill.customerName,
-                    customerAddress: "-",
-                    packageName: "-",
+                    customerAddress: selectedBill.customerAddress || "-",
+                    packageName: selectedBill.packageName || "-",
                     period: formatDate(selectedBill.billPeriod),
                     amount: selectedBill.amount,
                     paymentMethod: paymentMethod,
