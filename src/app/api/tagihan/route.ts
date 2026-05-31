@@ -47,6 +47,7 @@ export async function GET(request: NextRequest) {
         customerPhone: customers.phone,
         packageName: internetPackages.name,
         billPeriod: bills.billPeriod,
+        billType: bills.billType,
         amount: bills.amount,
         status: bills.status,
         dueDate: bills.dueDate,

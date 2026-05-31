@@ -19,6 +19,7 @@ interface Bill {
   customerPhone: string;
   packageName: string;
   billPeriod: string;
+  billType: string;
   amount: number;
   status: string;
   dueDate: string;
@@ -167,7 +168,7 @@ export default function TagihanPage() {
                         </Link>
                         {bill.status === "belum_bayar" && bill.customerPhone && (
                           <a
-                            href={`https://wa.me/${bill.customerPhone.replace(/^0/, "62")}?text=${encodeURIComponent(`Kami dari Bumdesa GIRI MANDALA ingin menginformasikan tagihan internet Bapak/Ibu :\n\nNama: ${bill.customerName}\nNo. Invoice: ${bill.invoiceNumber}\nPaket: ${bill.packageName}\nJatuh Tempo: ${formatDate(bill.dueDate)}\nJumlah: ${formatRupiah(bill.amount)}\n\nMohon untuk dapat melakukan pembayaran melalui collector kami. Terima kasih.\n\nBumdesa GIRI MANDALA`)}`}
+                            href={`https://wa.me/${bill.customerPhone.replace(/^0/, "62")}?text=${encodeURIComponent(bill.billType === "instalasi" ? `Kami dari Bumdesa GIRI MANDALA ingin menginformasikan tagihan biaya pemasangan internet Bapak/Ibu :\n\nNama: ${bill.customerName}\nNo. Invoice: ${bill.invoiceNumber}\nJumlah: ${formatRupiah(bill.amount)}\n\nMohon untuk dapat melakukan pembayaran melalui collector kami. Terima kasih.\n\nBumdesa GIRI MANDALA` : `Kami dari Bumdesa GIRI MANDALA ingin menginformasikan tagihan internet Bapak/Ibu :\n\nNama: ${bill.customerName}\nNo. Invoice: ${bill.invoiceNumber}\nPaket: ${bill.packageName}\nJatuh Tempo: ${formatDate(bill.dueDate)}\nJumlah: ${formatRupiah(bill.amount)}\n\nMohon untuk dapat melakukan pembayaran melalui collector kami. Terima kasih.\n\nBumdesa GIRI MANDALA`)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -211,7 +212,7 @@ export default function TagihanPage() {
                     </Link>
                     {bill.status === "belum_bayar" && bill.customerPhone && (
                       <a
-                        href={`https://wa.me/${bill.customerPhone.replace(/^0/, "62")}?text=${encodeURIComponent(`Kami dari Bumdesa GIRI MANDALA ingin menginformasikan tagihan internet Bapak/Ibu :\n\nNama: ${bill.customerName}\nNo. Invoice: ${bill.invoiceNumber}\nPaket: ${bill.packageName}\nJatuh Tempo: ${formatDate(bill.dueDate)}\nJumlah: ${formatRupiah(bill.amount)}\n\nMohon untuk dapat melakukan pembayaran melalui collector kami. Terima kasih.\n\nBumdesa GIRI MANDALA`)}`}
+                        href={`https://wa.me/${bill.customerPhone.replace(/^0/, "62")}?text=${encodeURIComponent(bill.billType === "instalasi" ? `Kami dari Bumdesa GIRI MANDALA ingin menginformasikan tagihan biaya pemasangan internet Bapak/Ibu :\n\nNama: ${bill.customerName}\nNo. Invoice: ${bill.invoiceNumber}\nJumlah: ${formatRupiah(bill.amount)}\n\nMohon untuk dapat melakukan pembayaran melalui collector kami. Terima kasih.\n\nBumdesa GIRI MANDALA` : `Kami dari Bumdesa GIRI MANDALA ingin menginformasikan tagihan internet Bapak/Ibu :\n\nNama: ${bill.customerName}\nNo. Invoice: ${bill.invoiceNumber}\nPaket: ${bill.packageName}\nJatuh Tempo: ${formatDate(bill.dueDate)}\nJumlah: ${formatRupiah(bill.amount)}\n\nMohon untuk dapat melakukan pembayaran melalui collector kami. Terima kasih.\n\nBumdesa GIRI MANDALA`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex-1"
