@@ -19,6 +19,7 @@ import {
   Moon,
   PanelLeftClose,
   UserCog,
+  ChevronDown,
 } from "lucide-react";
 import { useState, createContext, useContext } from "react";
 import { signOut, useSession } from "next-auth/react";
@@ -31,7 +32,15 @@ const navItems = [
   { href: "/pelanggan", label: "Pelanggan", icon: Users },
   { href: "/tagihan", label: "Tagihan", icon: FileText },
   { href: "/pembayaran", label: "Pembayaran", icon: CreditCard },
-  { href: "/laporan", label: "Laporan", icon: BarChart3 },
+  {
+    href: "/laporan",
+    label: "Laporan",
+    icon: BarChart3,
+    children: [
+      { href: "/laporan/rekap-tagihan", label: "Rekap Tagihan" },
+      { href: "/laporan/pendapatan-bulanan", label: "Pendapatan Bulanan" },
+    ],
+  },
   { href: "/users", label: "Manajemen User", icon: UserCog, adminOnly: true },
   { href: "/settings", label: "Pengaturan", icon: Settings, adminOnly: true },
 ];
@@ -132,10 +141,54 @@ export function Sidebar() {
         <nav className={cn("flex-1 py-4 space-y-1 overflow-y-auto", collapsed ? "px-2" : "px-3")}>
           {filteredNav.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+            const hasChildren = "children" in item && item.children;
+
+            if (hasChildren && !collapsed) {
+              return (
+                <div key={item.href}>
+                  <button
+                    onClick={() => {}}
+                    className={cn(
+                      "flex items-center w-full rounded-lg text-sm font-medium transition-colors duration-150",
+                      "gap-3 px-3 py-2",
+                      isActive
+                        ? "bg-accent text-accent-foreground"
+                        : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
+                    )}
+                  >
+                    <item.icon className="h-4 w-4 shrink-0" />
+                    <span className="flex-1 text-left">{item.label}</span>
+                    <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isActive && "rotate-180")} />
+                  </button>
+                  {isActive && (
+                    <div className="ml-7 mt-1 space-y-1">
+                      {item.children.map((child) => {
+                        const isChildActive = pathname === child.href || pathname.startsWith(child.href + "/");
+                        return (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            className={cn(
+                              "flex items-center px-3 py-1.5 rounded-md text-sm transition-colors duration-150",
+                              isChildActive
+                                ? "text-accent-foreground font-medium bg-accent/50"
+                                : "text-muted-foreground hover:text-accent-foreground hover:bg-accent/30"
+                            )}
+                          >
+                            {child.label}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={hasChildren ? item.children![0].href : item.href}
                 title={collapsed ? item.label : undefined}
                 className={cn(
                   "flex items-center rounded-lg text-sm font-medium transition-colors duration-150",
@@ -210,6 +263,49 @@ export function MobileNav() {
           <nav className="px-4 py-3 space-y-1">
             {filteredNav.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+              const hasChildren = "children" in item && item.children;
+
+              if (hasChildren) {
+                return (
+                  <div key={item.href}>
+                    <div
+                      className={cn(
+                        "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors duration-150",
+                        isActive
+                          ? "bg-accent text-accent-foreground"
+                          : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
+                      )}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span className="flex-1">{item.label}</span>
+                      <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isActive && "rotate-180")} />
+                    </div>
+                    {isActive && (
+                      <div className="ml-8 mt-1 space-y-1">
+                        {item.children.map((child) => {
+                          const isChildActive = pathname === child.href || pathname.startsWith(child.href + "/");
+                          return (
+                            <Link
+                              key={child.href}
+                              href={child.href}
+                              onClick={() => setOpen(false)}
+                              className={cn(
+                                "flex items-center px-4 py-2 rounded-md text-sm transition-colors duration-150",
+                                isChildActive
+                                  ? "text-accent-foreground font-medium bg-accent/50"
+                                  : "text-muted-foreground hover:text-accent-foreground hover:bg-accent/30"
+                              )}
+                            >
+                              {child.label}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
               return (
                 <Link
                   key={item.href}
