@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
@@ -180,7 +181,11 @@ export default function RekapTagihanPage() {
               <tbody>
                 {data.map((row) => (
                   <tr key={row.period} className="border-b border-border/50 hover:bg-accent/50 transition-colors">
-                    <td className="p-4 font-medium text-foreground">{formatPeriod(row.period)}</td>
+                    <td className="p-4 font-medium text-foreground">
+                      <Link href={`/laporan/rekap-tagihan/${row.period}`} className="text-primary hover:underline">
+                        {formatPeriod(row.period)}
+                      </Link>
+                    </td>
                     <td className="p-4 text-right text-foreground">{row.totalBills}</td>
                     <td className="p-4 text-right text-emerald-600 dark:text-emerald-400">{row.paidBills}</td>
                     <td className="p-4 text-right text-rose-600 dark:text-rose-400">{row.unpaidBills}</td>
@@ -198,7 +203,9 @@ export default function RekapTagihanPage() {
             {data.map((row) => (
               <Card key={row.period} className="border-border">
                 <CardContent className="p-4">
-                  <p className="font-medium text-foreground mb-3">{formatPeriod(row.period)}</p>
+                  <Link href={`/laporan/rekap-tagihan/${row.period}`} className="font-medium text-primary hover:underline mb-3 block">
+                    {formatPeriod(row.period)}
+                  </Link>
                   <div className="grid grid-cols-3 gap-2 text-center">
                     <div>
                       <p className="text-xs text-muted-foreground">Total</p>
