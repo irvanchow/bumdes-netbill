@@ -191,13 +191,14 @@ export function RekapTagihanDocument({ data }: { data: RekapData }) {
           ))}
 
           <View style={styles.summaryRow}>
-            <Text style={[styles.summaryLabel, { width: 115 }]}>Total</Text>
-            <Text style={[styles.summaryValue, { width: 50, textAlign: "right" }]}>{data.summary.totalBills}</Text>
-            <Text style={[styles.summaryValue, { width: 50, textAlign: "right", color: "#059669" }]}>{data.summary.paidBills}</Text>
-            <Text style={[styles.summaryValue, { width: 50, textAlign: "right", color: "#dc2626" }]}>{data.summary.unpaidBills}</Text>
-            <Text style={[styles.summaryValue, { width: 90 }]}>{formatRupiahPdf(data.summary.totalAmount)}</Text>
-            <Text style={[styles.summaryValue, { width: 90, color: "#059669" }]}>{formatRupiahPdf(data.summary.paidAmount)}</Text>
-            <Text style={[styles.summaryValue, { width: 90, color: "#dc2626" }]}>{formatRupiahPdf(data.summary.unpaidAmount)}</Text>
+            <Text style={[styles.summaryLabel, styles.colNo]}></Text>
+            <Text style={[styles.summaryLabel, styles.colPeriod]}>Total</Text>
+            <Text style={[styles.summaryValue, styles.colCount]}>{data.summary.totalBills}</Text>
+            <Text style={[styles.summaryValue, styles.colCount, { color: "#059669" }]}>{data.summary.paidBills}</Text>
+            <Text style={[styles.summaryValue, styles.colCount, { color: "#dc2626" }]}>{data.summary.unpaidBills}</Text>
+            <Text style={[styles.summaryValue, styles.colAmount]}>{formatRupiahPdf(data.summary.totalAmount)}</Text>
+            <Text style={[styles.summaryValue, styles.colAmount, { color: "#059669" }]}>{formatRupiahPdf(data.summary.paidAmount)}</Text>
+            <Text style={[styles.summaryValue, styles.colAmount, { color: "#dc2626" }]}>{formatRupiahPdf(data.summary.unpaidAmount)}</Text>
           </View>
         </View>
 
