@@ -91,7 +91,7 @@ export default function PembayaranPage() {
                     <td className="p-4 font-mono text-xs text-muted-foreground">{p.invoiceNumber}</td>
                     <td className="p-4 font-medium text-foreground">{formatRupiah(p.amountPaid)}</td>
                     <td className="p-4">
-                      <Badge variant="secondary" className="bg-muted text-muted-foreground border-0">{p.paymentMethod}</Badge>
+                      <Badge variant="secondary" className={p.paymentMethod === "transfer" ? "bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-50 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-800" : "bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-50 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800"}>{p.paymentMethod}</Badge>
                     </td>
                     <td className="p-4 text-muted-foreground">{p.collectorName}</td>
                   </tr>
@@ -111,7 +111,7 @@ export default function PembayaranPage() {
                       <p className="text-xs text-primary font-mono">{p.transactionCode}</p>
                       <p className="text-xs text-muted-foreground font-mono">{p.invoiceNumber}</p>
                     </div>
-                    <Badge variant="secondary" className="bg-muted text-muted-foreground border-0">{p.paymentMethod}</Badge>
+                    <Badge variant="secondary" className={p.paymentMethod === "transfer" ? "bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-50 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-800" : "bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-50 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800"}>{p.paymentMethod}</Badge>
                   </div>
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
                     <span className="text-sm text-muted-foreground">{formatDate(p.paymentDate)}</span>
