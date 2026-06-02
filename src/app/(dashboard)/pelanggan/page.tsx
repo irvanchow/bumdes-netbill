@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Search, ChevronLeft, ChevronRight, Ban, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { formatRupiah } from "@/lib/utils";
 import { useSession } from "next-auth/react";
@@ -37,7 +37,24 @@ export default function PelangganPage() {
   const [pagination, setPagination] = useState<Pagination>({ page: 1, limit: 10, total: 0, totalPages: 0 });
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [deactivatingId, setDeactivatingId] = useState<string | null>(null);
   const isAdmin = session?.user?.role === "admin";
+
+  const deactivateCustomer = async (id: string, name: string) => {
+    if (!confirm(`Nonaktifkan pelanggan "${name}"?\\n\\nStatus akan berubah menjadi nonaktif dan tagihan tidak akan dibuat lagi untuk pelanggan ini.`)) return;
+    setDeactivatingId(id);
+    try {
+      const res = await fetch(`/api/pelanggan/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Gagal menonaktifkan");
+      setCustomers((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, status: "nonaktif" } : c))
+      );
+    } catch {
+      alert("Gagal menonaktifkan pelanggan.");
+    } finally {
+      setDeactivatingId(null);
+    }
+  };
 
   const fetchCustomers = useCallback(async (page: number, searchQuery: string) => {
     setLoading(true);
@@ -129,9 +146,27 @@ export default function PelangganPage() {
                       </Badge>
                     </td>
                     <td className="p-4">
-                      <Link href={`/pelanggan/${c.id}`}>
-                        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">Detail</Button>
-                      </Link>
+                      <div className="flex items-center gap-1">
+                        <Link href={`/pelanggan/${c.id}`}>
+                          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">Detail</Button>
+                        </Link>
+                        {isAdmin && c.status !== "nonaktif" && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Nonaktifkan pelanggan"
+                            disabled={deactivatingId === c.id}
+                            onClick={() => deactivateCustomer(c.id, c.name)}
+                            className="text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
+                          >
+                            {deactivatingId === c.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Ban className="h-4 w-4" />
+                            )}
+                          </Button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -142,16 +177,16 @@ export default function PelangganPage() {
           {/* Mobile cards */}
           <div className="md:hidden space-y-3">
             {customers.map((c) => (
-              <Link key={c.id} href={`/pelanggan/${c.id}`}>
-                <Card className="hover:shadow-sm transition-shadow border-border">
-                  <CardContent className="p-4">
+              <Card key={c.id} className="hover:shadow-sm transition-shadow border-border relative">
+                <Link href={`/pelanggan/${c.id}`} className="block">
+                  <CardContent className="p-4 pr-10">
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="font-medium text-foreground">{c.name}</p>
                         <p className="text-sm text-muted-foreground">{c.phone}</p>
                         <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{c.address}</p>
                       </div>
-                      <Badge variant={c.status === "aktif" ? "default" : "secondary"} className={`ml-2 ${c.status === "aktif" ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-50 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800" : "bg-muted text-muted-foreground border border-border"}`}>
+                      <Badge variant={c.status === "aktif" ? "default" : "secondary"} className={`ml-2 shrink-0 ${c.status === "aktif" ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-50 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800" : "bg-muted text-muted-foreground border border-border"}`}>
                         {c.status}
                       </Badge>
                     </div>
@@ -160,8 +195,24 @@ export default function PelangganPage() {
                       <span className="text-sm font-medium text-foreground">{formatRupiah(c.monthlyPrice)}</span>
                     </div>
                   </CardContent>
-                </Card>
-              </Link>
+                </Link>
+                {isAdmin && c.status !== "nonaktif" && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    title="Nonaktifkan pelanggan"
+                    disabled={deactivatingId === c.id}
+                    onClick={(e) => { e.preventDefault(); deactivateCustomer(c.id, c.name); }}
+                    className="absolute top-2 right-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
+                  >
+                    {deactivatingId === c.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Ban className="h-4 w-4" />
+                    )}
+                  </Button>
+                )}
+              </Card>
             ))}
           </div>
 
