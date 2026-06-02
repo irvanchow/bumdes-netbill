@@ -1,25 +1,25 @@
 import { db } from "@/lib/db";
 import { bills, customers, internetPackages } from "@/lib/db/schema";
 import { eq, and, sql, inArray } from "drizzle-orm";
-import { generateInvoiceNumber, generateInstallationInvoiceNumber } from "@/lib/utils";
+import { generateInvoiceNumber, generateInstallationInvoiceNumber, toLocalDateStr } from "@/lib/utils";
 
 const INSTALLATION_FEE = 500000;
 
 export async function generateMonthlyBills(period: Date) {
   const billPeriod = new Date(period.getFullYear(), period.getMonth(), 1);
-  const billPeriodStr = billPeriod.toISOString().split("T")[0];
+  const billPeriodStr = toLocalDateStr(billPeriod);
   const dueDate = new Date(period.getFullYear(), period.getMonth(), 27);
-  const dueDateStr = dueDate.toISOString().split("T")[0];
+  const dueDateStr = toLocalDateStr(dueDate);
 
   // Cutoff: customers activated on or before 27th of previous month are eligible
   // If activated <= 27 of current month, eligible for current month
   // If activated > 27 of previous month but <= 27 current month, eligible for current month
   const cutoffDate = new Date(period.getFullYear(), period.getMonth(), 27);
-  const cutoffStr = cutoffDate.toISOString().split("T")[0];
+  const cutoffStr = toLocalDateStr(cutoffDate);
 
   // Previous month 27th - customers activated after this date but before current 27th get their first bill this month
   const prevCutoff = new Date(period.getFullYear(), period.getMonth() - 1, 27);
-  const prevCutoffStr = prevCutoff.toISOString().split("T")[0];
+  const prevCutoffStr = toLocalDateStr(prevCutoff);
 
   const eligibleCustomers = await db
     .select({
@@ -83,9 +83,9 @@ export async function generateMonthlyBills(period: Date) {
 
 export async function generateFirstBill(customerId: string, activationDate: Date) {
   const billPeriod = new Date(activationDate.getFullYear(), activationDate.getMonth(), 1);
-  const billPeriodStr = billPeriod.toISOString().split("T")[0];
+  const billPeriodStr = toLocalDateStr(billPeriod);
   const dueDate = new Date(activationDate.getFullYear(), activationDate.getMonth(), 27);
-  const dueDateStr = dueDate.toISOString().split("T")[0];
+  const dueDateStr = toLocalDateStr(dueDate);
 
   // Check if bill already exists
   const existing = await db
@@ -134,9 +134,9 @@ export async function generateFirstBill(customerId: string, activationDate: Date
 export async function generateInstallationBill(customerId: string) {
   const now = new Date();
   // Use registration date (today) as billPeriod to avoid conflict with monthly bills
-  const billPeriodStr = now.toISOString().split("T")[0];
+  const billPeriodStr = toLocalDateStr(now);
   const dueDate = new Date(now.getFullYear(), now.getMonth(), 27);
-  const dueDateStr = dueDate.toISOString().split("T")[0];
+  const dueDateStr = toLocalDateStr(dueDate);
 
   // Count existing installation invoices for sequence
   const [countResult] = await db

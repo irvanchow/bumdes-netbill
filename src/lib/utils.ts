@@ -42,6 +42,17 @@ export function formatShortDate(date: string | Date): string {
   }).format(new Date(date));
 }
 
+// Format a Date as YYYY-MM-DD using its LOCAL components, not UTC.
+// Using toISOString() here would shift the calendar date on servers with a
+// positive UTC offset (e.g. WITA, UTC+8), turning local midnight into the
+// previous day's date.
+export function toLocalDateStr(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export function generateInvoiceNumber(period: Date, sequence: number): string {
   const year = period.getFullYear();
   const month = String(period.getMonth() + 1).padStart(2, "0");
