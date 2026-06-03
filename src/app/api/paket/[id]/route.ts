@@ -43,7 +43,6 @@ export async function PUT(
     .update(internetPackages)
     .set({
       name: parsed.data.name,
-      category: parsed.data.category,
       speed: parsed.data.speed,
       monthlyPrice: parsed.data.monthlyPrice,
       description: parsed.data.description || null,

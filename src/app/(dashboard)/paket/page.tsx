@@ -13,7 +13,6 @@ import { toast } from "sonner";
 interface Package {
   id: string;
   name: string;
-  category: string;
   speed: string;
   monthlyPrice: number;
   description: string | null;
@@ -46,7 +45,6 @@ export default function PaketPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: pkg.name,
-        category: pkg.category,
         speed: pkg.speed,
         monthlyPrice: pkg.monthlyPrice,
         description: pkg.description || "",
@@ -118,9 +116,6 @@ export default function PaketPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                  {pkg.category === "wireless_broadband" ? "Wireless Broadband" : "Fiber Optik"}
-                </p>
                 <p className="text-2xl font-semibold text-foreground">
                   {formatRupiah(pkg.monthlyPrice)}
                   <span className="text-sm font-normal text-muted-foreground">/bulan</span>

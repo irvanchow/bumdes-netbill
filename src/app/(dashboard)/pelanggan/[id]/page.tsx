@@ -30,6 +30,7 @@ interface Customer {
   latitude: string | null;
   longitude: string | null;
   packageId: string;
+  category: string | null;
   assignedCollectorId: string | null;
   packageName: string;
   packageSpeed: string;
@@ -109,6 +110,7 @@ export default function DetailPelangganPage({ params }: { params: Promise<{ id: 
       phone: formData.get("phone") as string,
       email: formData.get("email") as string,
       packageId: formData.get("packageId") as string,
+      category: formData.get("category") as string,
       registrationDate: formData.get("registrationDate") as string,
       activationDate: formData.get("activationDate") as string,
       latitude,
@@ -179,6 +181,18 @@ export default function DetailPelangganPage({ params }: { params: Promise<{ id: 
               <div>
                 <p className="text-sm text-muted-foreground">Harga/Bulan</p>
                 <p className="font-semibold text-foreground">{formatRupiah(customer.monthlyPrice)}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Kategori</p>
+                <p className="text-foreground">
+                  {customer.category === "wireless_broadband"
+                    ? "Wireless Broadband"
+                    : customer.category === "fiber_optik"
+                    ? "Fiber Optik"
+                    : "-"}
+                </p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -262,6 +276,20 @@ export default function DetailPelangganPage({ params }: { params: Promise<{ id: 
                 ) : (
                   <div className="h-9 rounded-md border border-input bg-background animate-pulse" />
                 )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="category">Kategori</Label>
+                <select
+                  id="category"
+                  name="category"
+                  defaultValue={customer.category || ""}
+                  required
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  <option value="">Pilih kategori...</option>
+                  <option value="wireless_broadband">Wireless Broadband</option>
+                  <option value="fiber_optik">Fiber Optik</option>
+                </select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="registrationDate">Tanggal Registrasi</Label>

@@ -48,28 +48,24 @@ async function seed() {
     .values([
       {
         name: "Paket Khusus",
-        category: "wireless_broadband",
         speed: "Up to 5 Mbps",
         monthlyPrice: 100000,
         description: "Paket Minim Pengguna",
       },
       {
         name: "Paket Rumah Tangga",
-        category: "wireless_broadband",
         speed: "Up to 10 Mbps",
         monthlyPrice: 150000,
         description: "Pengguna Max 4 Orang",
       },
       {
         name: "Paket Bisnis",
-        category: "fiber_optik",
         speed: "Up to 20 Mbps",
         monthlyPrice: 200000,
         description: "Pengguna TV, CCTV",
       },
       {
         name: "Paket Bisnis Plus",
-        category: "fiber_optik",
         speed: "Up to 25 Mbps",
         monthlyPrice: 250000,
         description: "Pengguna TV,CCTV",

@@ -53,6 +53,7 @@ export default function TambahPelangganPage() {
       phone: formData.get("phone") as string,
       email: formData.get("email") as string,
       packageId: formData.get("packageId") as string,
+      category: formData.get("category") as string,
       registrationDate: formData.get("registrationDate") as string,
       latitude,
       longitude,
@@ -121,6 +122,20 @@ export default function TambahPelangganPage() {
                     {pkg.name} - {pkg.speed} ({new Intl.NumberFormat("id-ID").format(pkg.monthlyPrice)}/bln)
                   </option>
                 ))}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="category">Kategori</Label>
+              <select
+                id="category"
+                name="category"
+                required
+                defaultValue=""
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="">Pilih kategori...</option>
+                <option value="wireless_broadband">Wireless Broadband</option>
+                <option value="fiber_optik">Fiber Optik</option>
               </select>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

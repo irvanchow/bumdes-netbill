@@ -33,7 +33,9 @@ export const users = pgTable("users", {
 export const internetPackages = pgTable("internet_packages", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: varchar("name", { length: 100 }).notNull(),
-  category: packageCategoryEnum("category").notNull(),
+  // Kategori koneksi kini atribut pelanggan (lihat customers.category), bukan paket.
+  // Kolom dipertahankan (nullable) untuk data lama; tidak lagi diisi dari form.
+  category: packageCategoryEnum("category"),
   speed: varchar("speed", { length: 50 }).notNull(),
   monthlyPrice: integer("monthly_price").notNull(),
   description: text("description"),
@@ -51,6 +53,7 @@ export const customers = pgTable("customers", {
   packageId: uuid("package_id")
     .references(() => internetPackages.id)
     .notNull(),
+  category: packageCategoryEnum("category"),
   registrationDate: date("registration_date").notNull(),
   activationDate: date("activation_date"),
   latitude: numeric("latitude", { precision: 10, scale: 7 }),

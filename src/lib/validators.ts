@@ -2,7 +2,6 @@ import { z } from "zod";
 
 export const paketSchema = z.object({
   name: z.string().min(1, "Nama paket wajib diisi"),
-  category: z.enum(["wireless_broadband", "fiber_optik"]),
   speed: z.string().min(1, "Kecepatan wajib diisi"),
   monthlyPrice: z.number().min(1, "Harga wajib diisi"),
   description: z.string().optional(),
@@ -15,6 +14,7 @@ export const pelangganSchema = z.object({
   phone: z.string().min(1, "No. telepon wajib diisi"),
   email: z.string().email("Email tidak valid").optional().or(z.literal("")),
   packageId: z.string().uuid("Paket wajib dipilih"),
+  category: z.enum(["wireless_broadband", "fiber_optik"], { message: "Kategori wajib dipilih" }),
   registrationDate: z.string().min(1, "Tanggal registrasi wajib diisi"),
   activationDate: z
     .string()
