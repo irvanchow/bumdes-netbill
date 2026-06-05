@@ -66,3 +66,25 @@ export function generateInstallationInvoiceNumber(period: Date, sequence: number
   const seq = String(sequence).padStart(4, "0");
   return `INV-N${year}${month}-${seq}`;
 }
+
+/** Normalisasi tanggal aktivasi: jika tgl > 25 → geser ke tgl 1 bulan berikutnya. */
+export function normalizeActivationDate(dateStr: string): string {
+  if (!dateStr) return dateStr;
+  const parts = dateStr.split("-");
+  if (parts.length !== 3) return dateStr;
+  const y = Number(parts[0]), m = Number(parts[1]), d = Number(parts[2]);
+  if (Number.isNaN(y) || Number.isNaN(m) || Number.isNaN(d)) return dateStr;
+  if (d <= 25) return dateStr;
+  // Shift to 1st of next month; JS month overflow rolls over (13 → Jan next year)
+  const nextMonth = new Date(y, m, 1); // m is 1-indexed, JS treats m as 0-indexed → next month
+  return toLocalDateStr(nextMonth);
+}
+
+/** Hitung batas akhir pembayaran = tanggal 27 pada bulan jatuh tempo (dueDate). */
+export function getBatasAkhir(dueDateStr: string): string {
+  const parts = dueDateStr.split("-");
+  if (parts.length !== 3) return dueDateStr;
+  const y = Number(parts[0]), m = Number(parts[1]);
+  if (Number.isNaN(y) || Number.isNaN(m)) return dueDateStr;
+  return toLocalDateStr(new Date(y, m - 1, 27));
+}

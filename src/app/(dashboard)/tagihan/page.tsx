@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search, ChevronLeft, ChevronRight, FileText, RefreshCw } from "lucide-react";
 import Link from "next/link";
-import { formatRupiah, formatDate } from "@/lib/utils";
+import { formatRupiah, formatDate, getBatasAkhir } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
@@ -139,6 +139,7 @@ export default function TagihanPage() {
                   <th className="text-left p-4 font-medium text-xs uppercase tracking-wider text-muted-foreground">Periode</th>
                   <th className="text-left p-4 font-medium text-xs uppercase tracking-wider text-muted-foreground">Jumlah</th>
                   <th className="text-left p-4 font-medium text-xs uppercase tracking-wider text-muted-foreground">Jatuh Tempo</th>
+                  <th className="text-left p-4 font-medium text-xs uppercase tracking-wider text-muted-foreground">Batas Akhir</th>
                   <th className="text-left p-4 font-medium text-xs uppercase tracking-wider text-muted-foreground">Status</th>
                   <th className="text-left p-4 font-medium text-xs uppercase tracking-wider text-muted-foreground">Aksi</th>
                 </tr>
@@ -154,6 +155,7 @@ export default function TagihanPage() {
                     <td className="p-4 text-muted-foreground">{formatDate(bill.billPeriod)}</td>
                     <td className="p-4 font-medium text-foreground">{formatRupiah(bill.amount)}</td>
                     <td className="p-4 text-muted-foreground">{formatDate(bill.dueDate)}</td>
+                    <td className="p-4 text-muted-foreground">{formatDate(getBatasAkhir(bill.dueDate))}</td>
                     <td className="p-4">
                       <Badge variant={bill.status === "lunas" ? "default" : "destructive"} className={bill.status === "lunas" ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-50 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800" : "bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-50 dark:bg-rose-950 dark:text-rose-400 dark:border-rose-800"}>
                         {bill.status === "lunas" ? "Lunas" : "Belum Bayar"}
@@ -200,7 +202,10 @@ export default function TagihanPage() {
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
-                    <span className="text-sm text-muted-foreground">Jatuh tempo: {formatDate(bill.dueDate)}</span>
+                    <div>
+                      <span className="text-sm text-muted-foreground block">Jatuh tempo: {formatDate(bill.dueDate)}</span>
+                      <span className="text-xs text-muted-foreground block">Batas akhir: {formatDate(getBatasAkhir(bill.dueDate))}</span>
+                    </div>
                     <span className="text-sm font-medium text-foreground">{formatRupiah(bill.amount)}</span>
                   </div>
                   <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">

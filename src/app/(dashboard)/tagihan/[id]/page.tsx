@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Download, CreditCard, AlertTriangle } from "lucide-react";
 import Link from "next/link";
-import { formatRupiah, formatDate } from "@/lib/utils";
+import { formatRupiah, formatDate, getBatasAkhir } from "@/lib/utils";
 import { PrintReceiptButton } from "@/components/print-receipt-button";
 
 interface Payment {
@@ -115,6 +115,12 @@ export default function TagihanDetailPage({ params }: { params: Promise<{ id: st
               <div>
                 <p className="text-sm text-muted-foreground">Jatuh Tempo</p>
                 <p className="text-foreground">{formatDate(bill.dueDate)}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4 mt-2">
+              <div>
+                <p className="text-sm text-muted-foreground">Batas Akhir</p>
+                <p className="text-foreground">{formatDate(getBatasAkhir(bill.dueDate))}</p>
               </div>
             </div>
             <div>

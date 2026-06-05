@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { normalizeActivationDate } from "@/lib/utils";
 
 export const paketSchema = z.object({
   name: z.string().min(1, "Nama paket wajib diisi"),
@@ -20,15 +21,10 @@ export const pelangganSchema = z.object({
     .string()
     .optional()
     .or(z.literal(""))
-    .refine(
-      (val) => {
-        if (!val) return true; // kosong/undefined → lolos
-        const day = Number(val.split("-")[2]);
-        if (Number.isNaN(day)) return true; // biar validasi format lain yang urus
-        return day !== 26 && day !== 27;
-      },
-      { message: "Tanggal aktivasi tidak boleh tanggal 26 atau 27 (tidak ada instalasi)" }
-    ),
+    .transform((val) => {
+      if (!val) return val;
+      return normalizeActivationDate(val);
+    }),
   latitude: z.number().nullable().optional(),
   longitude: z.number().nullable().optional(),
   assignedCollectorId: z.string().uuid().optional().or(z.literal("")),

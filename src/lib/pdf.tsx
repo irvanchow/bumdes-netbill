@@ -180,6 +180,19 @@ function formatDatePdf(dateStr: string): string {
   });
 }
 
+function getBatasAkhirPdf(dueDateStr: string): string {
+  const parts = dueDateStr.split("-");
+  if (parts.length !== 3) return dueDateStr;
+  const y = Number(parts[0]), m = Number(parts[1]);
+  if (Number.isNaN(y) || Number.isNaN(m)) return dueDateStr;
+  const d = new Date(y, m - 1, 27); // tgl 27 bulan jatuh tempo
+  return d.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
 export function InvoiceDocument({ data }: { data: InvoiceData }) {
   return (
     <Document>
@@ -216,6 +229,10 @@ export function InvoiceDocument({ data }: { data: InvoiceData }) {
             <View style={styles.row}>
               <Text style={styles.label}>Jatuh Tempo</Text>
               <Text style={styles.value}>{formatDatePdf(data.dueDate)}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.label}>Batas Akhir</Text>
+              <Text style={styles.value}>{getBatasAkhirPdf(data.dueDate)}</Text>
             </View>
             <View style={styles.row}>
               <Text style={styles.label}>Status</Text>
