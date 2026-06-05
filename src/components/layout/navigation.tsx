@@ -39,6 +39,7 @@ const navItems = [
     children: [
       { href: "/laporan/rekap-tagihan", label: "Rekap Tagihan" },
       { href: "/laporan/pendapatan-bulanan", label: "Pendapatan Bulanan" },
+      { href: "/laporan/share-revenue", label: "Share Revenue" },
     ],
   },
   { href: "/users", label: "Manajemen User", icon: UserCog, adminOnly: true },
