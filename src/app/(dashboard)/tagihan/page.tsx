@@ -72,19 +72,24 @@ export default function TagihanPage() {
   async function handleGenerate() {
     if (!confirm("Generate tagihan untuk bulan ini? Tagihan akan dibuat untuk semua pelanggan aktif.")) return;
     setGenerating(true);
-    const res = await fetch("/api/tagihan", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({}),
-    });
-    const json = await res.json();
-    if (res.ok) {
-      toast.success(`Berhasil: ${json.generated} tagihan dibuat, ${json.skipped} dilewati`);
-      fetchBills(1, search, statusFilter, dueWithinFilter);
-    } else {
-      toast.error("Gagal generate tagihan");
+    try {
+      const res = await fetch("/api/tagihan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (res.ok) {
+        toast.success(`Berhasil: ${json.generated} tagihan dibuat, ${json.skipped} dilewati`);
+        fetchBills(1, search, statusFilter, dueWithinFilter);
+      } else {
+        toast.error(json.error || "Gagal generate tagihan");
+      }
+    } catch {
+      toast.error("Gagal generate tagihan: koneksi bermasalah");
+    } finally {
+      setGenerating(false);
     }
-    setGenerating(false);
   }
 
   return (

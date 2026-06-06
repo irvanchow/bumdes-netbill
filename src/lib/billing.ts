@@ -1,9 +1,32 @@
 import { db } from "@/lib/db";
 import { bills, customers, internetPackages } from "@/lib/db/schema";
 import { eq, and, sql, inArray } from "drizzle-orm";
-import { generateInvoiceNumber, generateInstallationInvoiceNumber, toLocalDateStr } from "@/lib/utils";
+import {
+  generateInvoiceNumber,
+  generateInstallationInvoiceNumber,
+  invoicePrefix,
+  installationInvoicePrefix,
+  toLocalDateStr,
+} from "@/lib/utils";
 
 const INSTALLATION_FEE = 500000;
+
+/**
+ * Nomor urut invoice berikutnya untuk suatu prefix (mis. "INV-202606-").
+ * Diturunkan dari MAX nomor yang sudah ada, BUKAN dari count(*).
+ * Berbasis count(*) rapuh: bill instalasi yang ber-billPeriod tanggal 1 ikut
+ * terhitung dan adanya gap/penghapusan membuat count+1 menabrak nomor yang
+ * sudah dipakai → pelanggaran unique constraint bills_invoice_number_unique.
+ */
+async function nextInvoiceSequence(prefix: string): Promise<number> {
+  const [row] = await db
+    .select({
+      maxSeq: sql<number>`COALESCE(MAX(regexp_replace(${bills.invoiceNumber}, '^.*-', '')::int), 0)`,
+    })
+    .from(bills)
+    .where(sql`${bills.invoiceNumber} LIKE ${prefix + "%"}`);
+  return (row?.maxSeq ?? 0) + 1;
+}
 
 export async function generateMonthlyBills(period: Date) {
   const billPeriod = new Date(period.getFullYear(), period.getMonth(), 1);
@@ -57,12 +80,7 @@ export async function generateMonthlyBills(period: Date) {
     const dueDate = new Date(billPeriod.getFullYear(), billPeriod.getMonth(), actDay);
     const dueDateStr = toLocalDateStr(dueDate);
 
-    const [countResult] = await db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(bills)
-      .where(eq(bills.billPeriod, billPeriodStr));
-
-    const sequence = (countResult?.count ?? 0) + 1;
+    const sequence = await nextInvoiceSequence(invoicePrefix(billPeriod));
     const invoiceNumber = generateInvoiceNumber(billPeriod, sequence);
 
     await db.insert(bills).values({
@@ -148,11 +166,7 @@ export async function autoGenerateBills() {
       if (today < sevenDaysBefore) continue;
 
       // Generate the bill
-      const [countResult] = await db
-        .select({ count: sql<number>`count(*)::int` })
-        .from(bills)
-        .where(eq(bills.billPeriod, periodStr));
-      const sequence = (countResult?.count ?? 0) + 1;
+      const sequence = await nextInvoiceSequence(invoicePrefix(candidate));
       const invoiceNumber = generateInvoiceNumber(candidate, sequence);
 
       await db.insert(bills).values({
@@ -204,12 +218,7 @@ export async function generateFirstBill(customerId: string, activationDate: Date
 
   if (!customer) return null;
 
-  const [countResult] = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(bills)
-    .where(eq(bills.billPeriod, billPeriodStr));
-
-  const sequence = (countResult?.count ?? 0) + 1;
+  const sequence = await nextInvoiceSequence(invoicePrefix(billPeriod));
   const invoiceNumber = generateInvoiceNumber(billPeriod, sequence);
 
   const [bill] = await db.insert(bills).values({
@@ -231,13 +240,7 @@ export async function generateInstallationBill(customerId: string) {
   const dueDate = new Date(now.getFullYear(), now.getMonth(), 27);
   const dueDateStr = toLocalDateStr(dueDate);
 
-  // Count existing installation invoices for sequence
-  const [countResult] = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(bills)
-    .where(eq(bills.billType, "instalasi"));
-
-  const sequence = (countResult?.count ?? 0) + 1;
+  const sequence = await nextInvoiceSequence(installationInvoicePrefix(now));
   const invoiceNumber = generateInstallationInvoiceNumber(now, sequence);
 
   const [bill] = await db.insert(bills).values({

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { users } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { users, payments, customers } from "@/lib/db/schema";
+import { eq, sql } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -66,6 +66,28 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   // Prevent deleting self
   if (session.user?.id === id) {
     return NextResponse.json({ error: "Tidak bisa menghapus akun sendiri" }, { status: 400 });
+  }
+
+  // Cek referensi: user tidak boleh dihapus jika masih punya riwayat transaksi
+  // atau ditugaskan ke pelanggan (FK NO ACTION akan memblokir delete di DB).
+  const [{ paymentCount }] = await db
+    .select({ paymentCount: sql<number>`count(*)::int` })
+    .from(payments)
+    .where(eq(payments.collectorId, id));
+
+  const [{ customerCount }] = await db
+    .select({ customerCount: sql<number>`count(*)::int` })
+    .from(customers)
+    .where(eq(customers.assignedCollectorId, id));
+
+  if (paymentCount > 0 || customerCount > 0) {
+    return NextResponse.json(
+      {
+        error:
+          "User tidak bisa dihapus karena masih memiliki riwayat transaksi atau pelanggan yang ditugaskan. Riwayat pembayaran tetap perlu dipertahankan.",
+      },
+      { status: 409 }
+    );
   }
 
   const [deleted] = await db.delete(users).where(eq(users.id, id)).returning({ id: users.id });

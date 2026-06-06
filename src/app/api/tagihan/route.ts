@@ -95,10 +95,17 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const period = body.period ? new Date(body.period) : new Date();
 
-  const result = await generateMonthlyBills(period);
-
-  return NextResponse.json({
-    message: "Tagihan berhasil digenerate",
-    ...result,
-  });
+  try {
+    const result = await generateMonthlyBills(period);
+    return NextResponse.json({
+      message: "Tagihan berhasil digenerate",
+      ...result,
+    });
+  } catch (error) {
+    console.error("Gagal generate tagihan:", error);
+    return NextResponse.json(
+      { error: "Gagal generate tagihan. Silakan coba lagi." },
+      { status: 500 }
+    );
+  }
 }
