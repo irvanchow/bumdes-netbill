@@ -8,15 +8,17 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { ArrowLeft, Upload, Camera, X, ImageIcon, CheckCircle } from "lucide-react";
+import { ArrowLeft, Upload, Camera, X, ImageIcon, CheckCircle, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import { PrintReceiptButton } from "@/components/print-receipt-button";
+import { buildReceiptText } from "@/lib/esc-pos";
 
 interface Bill {
   id: string;
   customerName: string;
   customerAddress: string;
+  customerPhone: string;
   packageName: string;
   invoiceNumber: string;
   amount: number;
@@ -186,6 +188,36 @@ function CatatPembayaranForm() {
                   }}
                   className="w-full"
                 />
+                {selectedBill.customerPhone && (
+                  <a
+                    href={`https://wa.me/${selectedBill.customerPhone.replace(/^0/, "62").replace(/\D/g, "")}?text=${encodeURIComponent(
+                      buildReceiptText({
+                        appName: "Bill BumdesNET",
+                        address: "Desa Jelijih Punggang",
+                        transactionCode: transactionCode,
+                        invoiceNumber: selectedBill.invoiceNumber,
+                        paymentDate: paidDate.split("-").reverse().join("-"),
+                        paymentTime: paidTime.slice(0, 5),
+                        billType: selectedBill.billType,
+                        customerName: selectedBill.customerName,
+                        customerAddress: selectedBill.customerAddress || "-",
+                        packageName: selectedBill.packageName || "-",
+                        period: formatDate(selectedBill.billPeriod),
+                        amount: selectedBill.amount,
+                        paymentMethod: paymentMethod,
+                        collectorName: "-",
+                      })
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full"
+                  >
+                    <Button variant="outline" className="w-full border-green-500 text-green-600 hover:bg-green-50 hover:text-green-700">
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      Kirim Struk via WA
+                    </Button>
+                  </a>
+                )}
                 <Link href="/pembayaran" className="w-full">
                   <Button variant="ghost" className="w-full text-muted-foreground">
                     Kembali ke Pembayaran

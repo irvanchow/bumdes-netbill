@@ -76,6 +76,40 @@ function formatRupiahPlain(amount: number): string {
   return "Rp " + amount.toLocaleString("id-ID");
 }
 
+/** Bangun teks struk untuk dikirim via WhatsApp. Isinya sama dengan struk cetak. */
+export function buildReceiptText(data: ReceiptData): string {
+  const sep = "--------------------------------";
+  const dSep = "================================";
+  const keterangan = data.billType === "instalasi" ? "Biaya Instalasi" : "Biaya Internet";
+  const metode = data.paymentMethod === "tunai" ? "Tunai" : "Transfer";
+  const jumlah = formatRupiahPlain(data.amount);
+
+  return [
+    dSep,
+    `*${data.appName}*`,
+    data.address,
+    dSep,
+    `Kode Trx    : ${data.transactionCode}`,
+    `No. Invoice : ${data.invoiceNumber}`,
+    `Tanggal     : ${data.paymentDate} ${data.paymentTime}`,
+    sep,
+    `Pelanggan   : ${data.customerName}`,
+    `Alamat      : ${data.customerAddress}`,
+    `Paket       : ${data.packageName}`,
+    `Periode     : ${data.period}`,
+    sep,
+    `Tagihan     : ${jumlah}`,
+    `Dibayar     : ${jumlah}`,
+    `Metode      : ${metode}`,
+    `Keterangan  : ${keterangan}`,
+    sep,
+    `Collector   : ${data.collectorName}`,
+    dSep,
+    "Terima kasih atas pembayaran Anda.",
+    dSep,
+  ].join("\n");
+}
+
 export function buildReceipt(data: ReceiptData): Uint8Array {
   const parts: Uint8Array[] = [];
 
