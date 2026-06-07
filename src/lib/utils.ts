@@ -113,3 +113,26 @@ export function formatMonthYear(dateStr: string): string {
     year: "numeric",
   });
 }
+
+/**
+ * Format periode billing sebagai "BulanAwal-BulanBerikut Tahun"
+ * (e.g., billPeriod "2026-06-01" → "Juni-Juli 2026").
+ *
+ * Aturan: periode billing = bulan billPeriod s/d bulan berikutnya.
+ * Tahun diambil dari bulan akhir agar "Desember-Januari 2027" benar.
+ */
+export function formatBillingPeriod(billPeriodStr: string): string {
+  const parts = billPeriodStr.split("-");
+  if (parts.length < 2) return billPeriodStr;
+  const y = Number(parts[0]), m = Number(parts[1]);
+  if (Number.isNaN(y) || Number.isNaN(m)) return billPeriodStr;
+
+  const startDate = new Date(y, m - 1, 1);
+  const endDate = new Date(y, m, 1); // bulan berikutnya
+
+  const startMonth = startDate.toLocaleDateString("id-ID", { month: "long" });
+  const endMonth = endDate.toLocaleDateString("id-ID", { month: "long" });
+  const endYear = endDate.getFullYear();
+
+  return `${startMonth}-${endMonth} ${endYear}`;
+}

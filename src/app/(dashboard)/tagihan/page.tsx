@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search, ChevronLeft, ChevronRight, FileText, RefreshCw } from "lucide-react";
 import Link from "next/link";
-import { formatRupiah, formatDate, formatMonthYear } from "@/lib/utils";
+import { formatRupiah, formatDate, formatMonthYear, formatBillingPeriod } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
@@ -166,7 +166,7 @@ export default function TagihanPage() {
                       <div className="font-medium text-foreground">{bill.customerName}</div>
                       <div className="text-xs text-muted-foreground">{bill.customerPhone}</div>
                     </td>
-                    <td className="p-4 text-muted-foreground">{formatMonthYear(bill.dueDate)}</td>
+                    <td className="p-4 text-muted-foreground">{formatBillingPeriod(bill.billPeriod)}</td>
                     <td className="p-4 font-medium text-foreground">{formatRupiah(bill.amount)}</td>
                     <td className="p-4 text-muted-foreground">{formatDate(bill.dueDate)}</td>
                     <td className="p-4">
@@ -216,7 +216,7 @@ export default function TagihanPage() {
                   </div>
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
                     <div>
-                      <span className="text-sm text-muted-foreground block">Periode: {formatMonthYear(bill.dueDate)}</span>
+                      <span className="text-sm text-muted-foreground block">Periode: {formatBillingPeriod(bill.billPeriod)}</span>
                       <span className="text-sm text-muted-foreground block">Jatuh tempo: {formatDate(bill.dueDate)}</span>
                     </div>
                     <span className="text-sm font-medium text-foreground">{formatRupiah(bill.amount)}</span>

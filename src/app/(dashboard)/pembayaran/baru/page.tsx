@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ArrowLeft, Upload, Camera, X, ImageIcon, CheckCircle, MessageCircle } from "lucide-react";
 import Link from "next/link";
-import { formatRupiah, formatDate } from "@/lib/utils";
+import { formatRupiah, formatDate, formatBillingPeriod } from "@/lib/utils";
 import { PrintReceiptButton } from "@/components/print-receipt-button";
 import { buildReceiptText } from "@/lib/esc-pos";
 
@@ -181,7 +181,7 @@ function CatatPembayaranForm() {
                     customerName: selectedBill.customerName,
                     customerAddress: selectedBill.customerAddress || "-",
                     packageName: selectedBill.packageName || "-",
-                    period: formatDate(selectedBill.billPeriod),
+                    period: formatBillingPeriod(selectedBill.billPeriod),
                     amount: selectedBill.amount,
                     paymentMethod: paymentMethod,
                     collectorName: "-",
@@ -202,7 +202,7 @@ function CatatPembayaranForm() {
                         customerName: selectedBill.customerName,
                         customerAddress: selectedBill.customerAddress || "-",
                         packageName: selectedBill.packageName || "-",
-                        period: formatDate(selectedBill.billPeriod),
+                        period: formatBillingPeriod(selectedBill.billPeriod),
                         amount: selectedBill.amount,
                         paymentMethod: paymentMethod,
                         collectorName: "-",

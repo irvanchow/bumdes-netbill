@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Download, CreditCard, AlertTriangle } from "lucide-react";
 import Link from "next/link";
-import { formatRupiah, formatDate, formatMonthYear, getBatasAkhir } from "@/lib/utils";
+import { formatRupiah, formatDate, formatMonthYear, formatBillingPeriod, getBatasAkhir } from "@/lib/utils";
 import { PrintReceiptButton } from "@/components/print-receipt-button";
 
 interface Payment {
@@ -146,7 +146,7 @@ export default function TagihanDetailPage({ params }: { params: Promise<{ id: st
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-muted-foreground">Periode Billing</p>
-                    <p className="text-foreground">{formatMonthYear(bill.dueDate)}</p>
+                    <p className="text-foreground">{formatBillingPeriod(bill.billPeriod)}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Jatuh Tempo</p>
@@ -206,7 +206,7 @@ export default function TagihanDetailPage({ params }: { params: Promise<{ id: st
                     customerName: bill.customerName,
                     customerAddress: bill.customerAddress,
                     packageName: `${bill.packageName} (${bill.packageSpeed})`,
-                    period: formatDate(bill.billPeriod),
+                    period: formatBillingPeriod(bill.billPeriod),
                     amount: bill.amount,
                     paymentMethod: bill.payments[0].paymentMethod,
                     collectorName: bill.payments[0].collectorName,
