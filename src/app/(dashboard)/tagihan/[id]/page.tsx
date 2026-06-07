@@ -104,7 +104,7 @@ export default function TagihanDetailPage({ params }: { params: Promise<{ id: st
                 {bill.billType === "instalasi" ? "Biaya Pemasangan" : "Tagihan Bulanan"}
               </CardTitle>
               <Badge variant={bill.status === "lunas" ? "default" : "destructive"} className={bill.status === "lunas" ? "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800" : "bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950 dark:text-rose-400 dark:border-rose-800"}>
-                {bill.status === "lunas" ? "Lunas" : "Belum Bayar"}
+                {bill.status === "lunas" ? "Lunas" : "Belum Lunas"}
               </Badge>
             </div>
           </CardHeader>
@@ -264,7 +264,7 @@ export default function TagihanDetailPage({ params }: { params: Promise<{ id: st
                     <div className="text-right">
                       <p className="font-semibold text-foreground">{formatRupiah(unpaid.amount)}</p>
                       <Badge variant="destructive" className="bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950 dark:text-rose-400 dark:border-rose-800 text-xs">
-                        Belum Bayar
+                        Belum Lunas
                       </Badge>
                     </div>
                   </div>

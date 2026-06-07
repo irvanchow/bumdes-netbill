@@ -123,7 +123,7 @@ export default function TagihanPage() {
           className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground"
         >
           <option value="">Semua Status</option>
-          <option value="belum_bayar">Belum Bayar</option>
+          <option value="belum_bayar">Belum Lunas</option>
           <option value="lunas">Lunas</option>
         </select>
         <select
@@ -171,7 +171,7 @@ export default function TagihanPage() {
                     <td className="p-4 text-muted-foreground">{formatDate(bill.dueDate)}</td>
                     <td className="p-4">
                       <Badge variant={bill.status === "lunas" ? "default" : "destructive"} className={bill.status === "lunas" ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-50 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800" : "bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-50 dark:bg-rose-950 dark:text-rose-400 dark:border-rose-800"}>
-                        {bill.status === "lunas" ? "Lunas" : "Belum Bayar"}
+                        {bill.status === "lunas" ? "Lunas" : "Belum Lunas"}
                       </Badge>
                     </td>
                     <td className="p-4">
@@ -211,7 +211,7 @@ export default function TagihanPage() {
                       <p className="text-xs text-muted-foreground font-mono">{bill.invoiceNumber}</p>
                     </div>
                     <Badge variant={bill.status === "lunas" ? "default" : "destructive"} className={bill.status === "lunas" ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-50 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800" : "bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-50 dark:bg-rose-950 dark:text-rose-400 dark:border-rose-800"}>
-                      {bill.status === "lunas" ? "Lunas" : "Belum Bayar"}
+                      {bill.status === "lunas" ? "Lunas" : "Belum Lunas"}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
