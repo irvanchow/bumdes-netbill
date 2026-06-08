@@ -58,6 +58,15 @@
 - Header struk: nama app dari settings, alamat: `BumDesa "GIRI MANDALA"`
 - Footer: "Simpan struk ini sebagai bukti pembayaran yang sah."
 
+## Notifikasi WA (Fonnte)
+- Kirim otomatis via API Fonnte (`https://api.fonnte.com/send`), helper di `src/lib/fonnte.ts`
+- Token: env `FONNTE_TOKEN` (header `Authorization: <token>`)
+- Pengingat tagihan H-3 jatuh tempo: endpoint `POST /api/cron/reminder-wa` (auth `Bearer CRON_SECRET`)
+- Hanya tagihan `billType=bulanan` & `status=belum_bayar`; pelanggan tanpa nomor HP di-skip
+- Cron VPS jam 07:00 WITA (`0 7 * * *`)
+- Dry-run preview: tambahkan `?dryRun=1` di query
+- Builder pesan: `buildReminderText()` di `src/lib/wa-templates.ts`
+
 ## Naming
 - Branch tetap `main` (tidak pakai feature branch — solo dev)
 - Commit message: bahasa Indonesia, prefix `feat:` / `fix:` / `chore:` (lihat git log untuk style)
