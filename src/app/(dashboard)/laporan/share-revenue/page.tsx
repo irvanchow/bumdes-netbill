@@ -167,7 +167,7 @@ export default function ShareRevenuePage() {
         {/* Instalasi */}
         <Card className="border-border shadow-none">
           <CardContent className="p-4">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Instalasi (80% / 20%)</p>
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider leading-snug">Pendapatan dari Instalasi (80%/20%)</p>
             <p className="text-lg font-semibold text-foreground mt-2">{formatRupiah(summary.instalasi.total)}</p>
             <div className="flex justify-between mt-2 text-sm">
               <span className="text-blue-600 dark:text-blue-400">ISP: {formatRupiah(summary.instalasi.isp)}</span>
@@ -178,7 +178,7 @@ export default function ShareRevenuePage() {
         {/* Fiber Optik */}
         <Card className="border-border shadow-none">
           <CardContent className="p-4">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Fiber Optik (70% / 30%)</p>
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider leading-snug">Pendapatan dari berlangganan Fiber Optik (70%/30%)</p>
             <p className="text-lg font-semibold text-foreground mt-2">{formatRupiah(summary.fiberOptik.total)}</p>
             <div className="flex justify-between mt-2 text-sm">
               <span className="text-blue-600 dark:text-blue-400">ISP: {formatRupiah(summary.fiberOptik.isp)}</span>
@@ -189,7 +189,7 @@ export default function ShareRevenuePage() {
         {/* Wireless Broadband */}
         <Card className="border-border shadow-none">
           <CardContent className="p-4">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Wireless (45% / 55%)</p>
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider leading-snug">Pendapatan dari berlangganan Wireless Broadband (45%/55%)</p>
             <p className="text-lg font-semibold text-foreground mt-2">{formatRupiah(summary.wirelessBroadband.total)}</p>
             <div className="flex justify-between mt-2 text-sm">
               <span className="text-blue-600 dark:text-blue-400">ISP: {formatRupiah(summary.wirelessBroadband.isp)}</span>

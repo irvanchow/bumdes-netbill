@@ -247,7 +247,7 @@ export function ShareRevenueDocument({ data }: { data: ShareRevenueData }) {
         <Text style={styles.sectionTitle}>Rincian per Kategori</Text>
         <View style={styles.summaryRow}>
           <View style={styles.catCard}>
-            <Text style={styles.catLabel}>Instalasi (80% / 20%)</Text>
+            <Text style={styles.catLabel}>Pendapatan dari Instalasi (80%/20%)</Text>
             <Text style={styles.catTotal}>{fmt(summary.instalasi.total)}</Text>
             <View style={styles.catSplit}>
               <Text>ISP: {fmt(summary.instalasi.isp)}</Text>
@@ -255,7 +255,7 @@ export function ShareRevenueDocument({ data }: { data: ShareRevenueData }) {
             </View>
           </View>
           <View style={styles.catCard}>
-            <Text style={styles.catLabel}>Fiber Optik (70% / 30%)</Text>
+            <Text style={styles.catLabel}>Pendapatan dari berlangganan Fiber Optik (70%/30%)</Text>
             <Text style={styles.catTotal}>{fmt(summary.fiberOptik.total)}</Text>
             <View style={styles.catSplit}>
               <Text>ISP: {fmt(summary.fiberOptik.isp)}</Text>
@@ -263,7 +263,7 @@ export function ShareRevenueDocument({ data }: { data: ShareRevenueData }) {
             </View>
           </View>
           <View style={styles.catCard}>
-            <Text style={styles.catLabel}>Wireless (45% / 55%)</Text>
+            <Text style={styles.catLabel}>Pendapatan dari berlangganan Wireless Broadband (45%/55%)</Text>
             <Text style={styles.catTotal}>{fmt(summary.wirelessBroadband.total)}</Text>
             <View style={styles.catSplit}>
               <Text>ISP: {fmt(summary.wirelessBroadband.isp)}</Text>
