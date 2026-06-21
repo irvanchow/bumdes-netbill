@@ -4,15 +4,12 @@ import { db } from "@/lib/db";
 import { bills, customers, payments } from "@/lib/db/schema";
 import { eq, sql, and, gte, lte } from "drizzle-orm";
 
-export const revalidate = 0;
-export const dynamic = 'force-dynamic';
-
 export async function GET() {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  
-  const result = await db.execute(sql`SELECT DATE_TRUNC('month', CURRENT_DATE)::date as "currentMonthStart"`);
-  const currentMonthStart = result.rows[0].currentMonthStart as string;
+
+  const now = new Date();
+  const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
 
   const isCollector = session.user.role === "collector";
 
@@ -73,8 +70,7 @@ export async function GET() {
     );
 
   // Monthly revenue for last 12 months
-  const now = new Date();
-  const twelveMonthsAgo = new Date(Date.UTC(now.getUTCFullYear() - 1, now.getUTCMonth(), 1)).toISOString().split("T")[0];
+  const twelveMonthsAgo = new Date(now.getFullYear() - 1, now.getMonth(), 1).toISOString().split("T")[0];
   const revenueByMonth = await db
     .select({
       period: bills.billPeriod,
