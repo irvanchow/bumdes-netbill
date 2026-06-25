@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { ArrowLeft, Pencil, UserX, UserCheck, CalendarPlus } from "lucide-react";
+import { ArrowLeft, Pencil, UserX, UserCheck, CalendarPlus, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { formatRupiah, formatDate, formatDateTime, customerStatusLabel } from "@/lib/utils";
 import { useSession } from "next-auth/react";
@@ -80,6 +80,27 @@ export default function DetailPelangganPage({ params }: { params: Promise<{ id: 
   const [generateDialogOpen, setGenerateDialogOpen] = useState(false);
   const [generateMonths, setGenerateMonths] = useState(3);
   const [generating, setGenerating] = useState(false);
+  const [sendWaLoading, setSendWaLoading] = useState<Record<string, boolean>>({});
+
+  async function handleSendReceipt(paymentId: string) {
+    setSendWaLoading((prev) => ({ ...prev, [paymentId]: true }));
+    try {
+      const res = await fetch(`/api/pembayaran/${paymentId}/kirim-wa`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const json = await res.json();
+      if (res.ok) {
+        toast.success(json.message || "Bukti pembayaran berhasil dikirim via WhatsApp");
+      } else {
+        toast.error(json.error || "Gagal mengirim bukti pembayaran");
+      }
+    } catch {
+      toast.error("Gagal mengirim bukti pembayaran");
+    } finally {
+      setSendWaLoading((prev) => ({ ...prev, [paymentId]: false }));
+    }
+  }
 
   useEffect(() => {
     fetch(`/api/pelanggan/${id}`)
@@ -469,6 +490,7 @@ export default function DetailPelangganPage({ params }: { params: Promise<{ id: 
                     <th className="text-left p-3 font-medium text-xs uppercase tracking-wider text-muted-foreground">No. Invoice</th>
                     <th className="text-left p-3 font-medium text-xs uppercase tracking-wider text-muted-foreground">Jumlah</th>
                     <th className="text-left p-3 font-medium text-xs uppercase tracking-wider text-muted-foreground">Metode</th>
+                    <th className="text-left p-3 font-medium text-xs uppercase tracking-wider text-muted-foreground">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -485,6 +507,24 @@ export default function DetailPelangganPage({ params }: { params: Promise<{ id: 
                         <Badge variant="secondary" className="bg-muted text-muted-foreground border-0">
                           {p.paymentMethod}
                         </Badge>
+                      </td>
+                      <td className="p-3">
+                        {customer.phone && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 hover:bg-green-50 dark:hover:bg-green-950"
+                            title="Kirim bukti via WhatsApp"
+                            disabled={sendWaLoading[p.id]}
+                            onClick={() => handleSendReceipt(p.id)}
+                          >
+                            {sendWaLoading[p.id] ? (
+                              <div className="h-4 w-4 animate-spin rounded-full border-2 border-green-600 border-t-transparent" />
+                            ) : (
+                              <img src="/icons/logo-whatsapp-png-46067.png" alt="WhatsApp" className="h-5 w-5" />
+                            )}
+                          </Button>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -504,7 +544,25 @@ export default function DetailPelangganPage({ params }: { params: Promise<{ id: 
                         {formatDateTime(p.paymentDate, p.paymentTime)}
                       </p>
                     </div>
-                    <p className="font-medium text-foreground">{formatRupiah(p.amountPaid)}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-foreground">{formatRupiah(p.amountPaid)}</p>
+                      {customer.phone && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 hover:bg-green-50 dark:hover:bg-green-950"
+                          title="Kirim bukti via WhatsApp"
+                          disabled={sendWaLoading[p.id]}
+                          onClick={() => handleSendReceipt(p.id)}
+                        >
+                          {sendWaLoading[p.id] ? (
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-green-600 border-t-transparent" />
+                          ) : (
+                            <img src="/icons/logo-whatsapp-png-46067.png" alt="WhatsApp" className="h-5 w-5" />
+                          )}
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}

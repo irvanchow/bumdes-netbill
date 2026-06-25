@@ -18,6 +18,7 @@ interface Payment {
   collectorName: string;
   invoiceNumber: string;
   customerName: string;
+  customerId: string;
 }
 
 interface Pagination {
@@ -87,7 +88,11 @@ export default function PembayaranPage() {
                   <tr key={p.id} className="border-b border-border/50 hover:bg-accent/50 transition-colors">
                     <td className="p-4 font-mono text-xs text-primary">{p.transactionCode}</td>
                     <td className="p-4 text-muted-foreground">{formatDate(p.paymentDate)}</td>
-                    <td className="p-4 font-medium text-foreground">{p.customerName}</td>
+                    <td className="p-4">
+                      <Link href={`/pelanggan/${p.customerId}`} className="font-medium text-foreground hover:text-primary transition-colors">
+                        {p.customerName}
+                      </Link>
+                    </td>
                     <td className="p-4 font-mono text-xs text-muted-foreground">{p.invoiceNumber}</td>
                     <td className="p-4 font-medium text-foreground">{formatRupiah(p.amountPaid)}</td>
                     <td className="p-4">
@@ -107,7 +112,9 @@ export default function PembayaranPage() {
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="font-medium text-foreground">{p.customerName}</p>
+                      <Link href={`/pelanggan/${p.customerId}`} className="font-medium text-foreground hover:text-primary transition-colors">
+                        {p.customerName}
+                      </Link>
                       <p className="text-xs text-primary font-mono">{p.transactionCode}</p>
                       <p className="text-xs text-muted-foreground font-mono">{p.invoiceNumber}</p>
                     </div>

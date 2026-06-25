@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
         collectorName: users.name,
         invoiceNumber: bills.invoiceNumber,
         customerName: customers.name,
+        customerId: customers.id,
         createdAt: payments.createdAt,
       })
       .from(payments)
